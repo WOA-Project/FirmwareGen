@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29006.145
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FirmwareGen", "FirmwareGen.csproj", "{85918ACF-6909-45DA-B56D-3D5113B7EA6C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{85918ACF-6909-45DA-B56D-3D5113B7EA6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85918ACF-6909-45DA-B56D-3D5113B7EA6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85918ACF-6909-45DA-B56D-3D5113B7EA6C}.Debug|x64.ActiveCfg = Debug|x64
+		{85918ACF-6909-45DA-B56D-3D5113B7EA6C}.Debug|x64.Build.0 = Debug|x64
+		{85918ACF-6909-45DA-B56D-3D5113B7EA6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85918ACF-6909-45DA-B56D-3D5113B7EA6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85918ACF-6909-45DA-B56D-3D5113B7EA6C}.Release|x64.ActiveCfg = Release|x64
+		{85918ACF-6909-45DA-B56D-3D5113B7EA6C}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3797BA97-8D14-4125-97B3-334C91E27977}
+	EndGlobalSection
+EndGlobal
