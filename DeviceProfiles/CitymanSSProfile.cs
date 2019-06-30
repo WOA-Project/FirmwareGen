@@ -14,7 +14,6 @@
                 $"/Driver:\"{DriverFolder}\\configurations\\battmngr-registry\\Cityman\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\bootloader-dual\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\specifics-mmo\" " +
-                $"/Driver:\"{DriverFolder}\\configurations\\touch-lumia950\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\soc-final\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\oeminfo-citymanss\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\display-oled\" " +

@@ -14,7 +14,6 @@
                 $"/Driver:\"{DriverFolder}\\configurations\\battmngr-registry\\Hapanero\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\bootloader-single\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\specifics-mmo\" " +
-                $"/Driver:\"{DriverFolder}\\configurations\\touch-hapanero\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\soc-prerelease\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\oeminfo-hapaneroeb1\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\graphics-hapanero\" " +

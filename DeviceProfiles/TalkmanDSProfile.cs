@@ -14,7 +14,6 @@
                 $"/Driver:\"{DriverFolder}\\configurations\\battmngr-registry\\Talkman\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\bootloader-dual\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\specifics-mmo\" " +
-                $"/Driver:\"{DriverFolder}\\configurations\\touch-lumia950\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\soc-final\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\oeminfo-talkmands\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\display-oled\" " +

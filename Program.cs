@@ -182,12 +182,15 @@ namespace FirmwareGen
         {
             Logging.Log("Mounting " + VHDPath + (readOnly ? " as read only" : "") + "...");
             RunProgram("powershell.exe", $"-command \"Import-module hyper-v; Mount-VHD -Path '{VHDPath}'" + (readOnly ? " -ReadOnly" : "") + "\"");
+            //var id = VHDUtils.MountVHD(VHDPath, readOnly);
+            //Logging.Log(id, Logging.LoggingLevel.Warning);
         }
 
         public static void DismountVHD(string VHDPath)
         {
             Logging.Log("Dismounting " + VHDPath + "...");
             RunProgram("powershell.exe", $"-command \"Import-module hyper-v; Dismount-VHD -Path '{VHDPath}'\"");
+            //VHDUtils.UnmountVHD(VHDPath);
         }
 
         public static string GetVHDLetter(string DiskId)
