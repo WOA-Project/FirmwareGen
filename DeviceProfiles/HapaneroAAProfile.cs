@@ -11,11 +11,11 @@
         {
             return $"/Driver:\"{DriverFolder}\\msm8992-8994\" " +
                 $"/Driver:\"{DriverFolder}\\msm8994\" " +
+                $"/Driver:\"{DriverFolder}\\support-desktop\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\battmngr-registry\\Hapanero\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\bootloader-single\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\specifics-mmo\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\soc-prerelease\" " +
-                $"/Driver:\"{DriverFolder}\\configurations\\oeminfo-hapaneroeb1\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\graphics-hapanero\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\specifics-hapanero\" /Recurse";
         }

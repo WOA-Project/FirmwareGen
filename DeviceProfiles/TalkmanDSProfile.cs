@@ -11,11 +11,11 @@
         {
             return $"/Driver:\"{DriverFolder}\\msm8992-8994\" " +
                 $"/Driver:\"{DriverFolder}\\msm8992\" " +
+                $"/Driver:\"{DriverFolder}\\support-desktop\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\battmngr-registry\\Talkman\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\bootloader-dual\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\specifics-mmo\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\soc-final\" " +
-                $"/Driver:\"{DriverFolder}\\configurations\\oeminfo-talkmands\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\display-oled\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\graphics-talkman\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\specifics-talkman\" /Recurse";
