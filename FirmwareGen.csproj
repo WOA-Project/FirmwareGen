@@ -66,12 +66,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeviceProfiles\CitymanDSProfile.cs" />
-    <Compile Include="DeviceProfiles\CitymanSSProfile.cs" />
+    <Compile Include="DeviceProfiles\CitymanProfile.cs" />
     <Compile Include="DeviceProfiles\HapaneroAAProfile.cs" />
     <Compile Include="DeviceProfiles\HapaneroABProfile.cs" />
-    <Compile Include="DeviceProfiles\TalkmanDSProfile.cs" />
-    <Compile Include="DeviceProfiles\TalkmanSSProfile.cs" />
+    <Compile Include="DeviceProfiles\TalkmanProfile.cs" />
     <Compile Include="Extensions\FileInfoExtensions.cs" />
     <Compile Include="IDeviceProfile.cs" />
     <Compile Include="Logging.cs" />
