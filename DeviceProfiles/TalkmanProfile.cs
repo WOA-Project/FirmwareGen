@@ -1,6 +1,6 @@
 ﻿namespace FirmwareGen.DeviceProfiles
 {
-    class TalkmanSSProfile : IDeviceProfile
+    class TalkmanProfile : IDeviceProfile
     {
         public string Bootloader()
         {
@@ -23,7 +23,7 @@
 
         public string FFUFileName(string OSVersion, string Language, string Sku)
         {
-            return $"RM-1104_{OSVersion}_CLIENT{Sku}_ARM64FRE_{Language}.ffu";
+            return $"Talkman_{OSVersion}_CLIENT{Sku}_ARM64FRE_{Language}.ffu";
         }
 
         public string PlatformID()

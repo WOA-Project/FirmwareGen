@@ -11,12 +11,10 @@ namespace FirmwareGen
 {
     class Program
     {
-        static IDeviceProfile[] deviceProfiles = new IDeviceProfile[6]
+        static IDeviceProfile[] deviceProfiles = new IDeviceProfile[4]
         {
-            new CitymanSSProfile(),
-            new CitymanDSProfile(),
-            new TalkmanSSProfile(),
-            new TalkmanDSProfile(),
+            new CitymanProfile(),
+            new TalkmanProfile(),
             new HapaneroAAProfile(),
             new HapaneroABProfile()
         };

@@ -1,6 +1,6 @@
 ﻿namespace FirmwareGen.DeviceProfiles
 {
-    class CitymanSSProfile : IDeviceProfile
+    class CitymanProfile : IDeviceProfile
     {
         public string Bootloader()
         {
@@ -23,7 +23,7 @@
 
         public string FFUFileName(string OSVersion, string Language, string Sku)
         {
-            return $"RM-1085_{OSVersion}_CLIENT{Sku}_ARM64FRE_{Language}.ffu";
+            return $"Cityman_{OSVersion}_CLIENT{Sku}_ARM64FRE_{Language}.ffu";
         }
 
         public string PlatformID()
