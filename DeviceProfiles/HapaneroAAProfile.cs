@@ -22,7 +22,7 @@
 
         public string FFUFileName(string OSVersion, string Language, string Sku)
         {
-            return $"RX-130v1_{OSVersion}_CLIENT{Sku}_ARM64FRE_{Language}.ffu";
+            return $"HapaneroV1_{OSVersion}_CLIENT{Sku}_ARM64FRE_{Language}.ffu";
         }
 
         public string PlatformID()
