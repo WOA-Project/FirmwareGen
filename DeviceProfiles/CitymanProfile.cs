@@ -12,12 +12,8 @@
             return $"/Driver:\"{DriverFolder}\\msm8992-8994\" " +
                 $"/Driver:\"{DriverFolder}\\msm8994\" " +
                 $"/Driver:\"{DriverFolder}\\support-desktop\" " +
-                $"/Driver:\"{DriverFolder}\\configurations\\battmngr-registry\\Cityman\" " +
-                $"/Driver:\"{DriverFolder}\\configurations\\bootloader-dual\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\specifics-mmo\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\soc-final\" " +
-                $"/Driver:\"{DriverFolder}\\configurations\\display-oled\" " +
-                $"/Driver:\"{DriverFolder}\\configurations\\graphics-cityman\" " +
                 $"/Driver:\"{DriverFolder}\\configurations\\specifics-cityman\" /Recurse";
         }
 
