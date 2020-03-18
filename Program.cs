@@ -24,13 +24,13 @@ namespace FirmwareGen
             Parser.Default.ParseArguments<Options>(args).WithParsed(o =>
             {
                 Logging.Log("FirmwareGen");
-                Logging.Log("Copyright (c) 2019, Gustave Monce - gus33000.me - @gus33000");
+                Logging.Log("Copyright (c) 2019-2020, Gustave Monce - gus33000.me - @gus33000");
                 Logging.Log("Released under the MIT license at github.com/gus33000/FirmwareGen");
                 Logging.Log("");
 
                 try
                 {
-                    GenFirmware(o.DriverPack, o.DiskId, o.WindowsDVD, o.WindowsIndex, o.WindowsVer, o.Output);
+                    GenFirmware(o.DriverPack, o.WindowsDVD, o.WindowsIndex, o.WindowsVer, o.Output);
                 }
                 catch (Exception ex)
                 {
@@ -41,7 +41,7 @@ namespace FirmwareGen
                 }
             });
         }
-        public static void GenFirmware(string DriverPackLocation, string DiskId, string WindowsDVD, string WindowsIndex, string OSBuild, string output)
+        public static void GenFirmware(string DriverPackLocation, string WindowsDVD, string WindowsIndex, string OSBuild, string output)
         {
             var BlankVHD = @"blank.vhdx";
             var tmp = @"tmp";
@@ -79,7 +79,7 @@ namespace FirmwareGen
             Logging.Log("Copying Blank Main VHD");
             CopyFile(BlankVHD, MainVHD);
 
-            MountVHD(MainVHD, false);
+            string DiskId = MountVHD(MainVHD, false);
 
             var VHDLetter = GetVHDLetter(DiskId);
 
@@ -105,7 +105,7 @@ namespace FirmwareGen
                 Logging.Log("Copying Main VHD");
                 CopyFile(MainVHD, TmpVHD);
 
-                MountVHD(TmpVHD, false);
+                DiskId = MountVHD(TmpVHD, false);
 
                 var TVHDLetter = GetVHDLetter(DiskId);
 
@@ -113,7 +113,7 @@ namespace FirmwareGen
                 WriteBootLoaderToDisk(DiskId, deviceProfile);
 
                 DismountVHD(TmpVHD);
-                MountVHD(TmpVHD, false);
+                DiskId = MountVHD(TmpVHD, false);
 
                 Logging.Log("Mounting SYSTEM");
                 RunProgram("powershell.exe", "-command \"Get-Partition -DiskNumber " + DiskId + " | Where {$_.Type -eq 'System'} | Set-Partition -NewDriveLetter '" + SystemPartition + "'.Substring(0,1)\"");
@@ -137,7 +137,7 @@ namespace FirmwareGen
                 RunProgram("dism.exe", $"/Image:{TVHDLetter} /Add-Driver " + deviceProfile.DriverCommand(DriverPackLocation));
 
                 DismountVHD(TmpVHD);
-                MountVHD(TmpVHD, true);
+                DiskId = MountVHD(TmpVHD, true);
 
                 Logging.Log("Making FFU");
                 RunProgram(Img2Ffu, $"-i \\\\.\\PhysicalDrive{DiskId} -f \"{output + "\\" + deviceProfile.FFUFileName(OSBuild, "EN-US", "PRO")}\" -p {deviceProfile.PlatformID()} -o {OSBuild}");
@@ -176,19 +176,20 @@ namespace FirmwareGen
             return "[" + bases + "]";
         }
 
-        public static void MountVHD(string VHDPath, bool readOnly)
+        public static string MountVHD(string VHDPath, bool readOnly)
         {
             Logging.Log("Mounting " + VHDPath + (readOnly ? " as read only" : "") + "...");
-            RunProgram("powershell.exe", $"-command \"Import-module hyper-v; Mount-VHD -Path '{VHDPath}'" + (readOnly ? " -ReadOnly" : "") + "\"");
-            //var id = VHDUtils.MountVHD(VHDPath, readOnly);
-            //Logging.Log(id, Logging.LoggingLevel.Warning);
+            //RunProgram("powershell.exe", $"-command \"Import-module hyper-v; Mount-VHD -Path '{VHDPath}'" + (readOnly ? " -ReadOnly" : "") + "\"");
+            var id = VHDUtils.MountVHD(VHDPath, readOnly);
+            Logging.Log(id, Logging.LoggingLevel.Warning);
+            return id;
         }
 
         public static void DismountVHD(string VHDPath)
         {
             Logging.Log("Dismounting " + VHDPath + "...");
-            RunProgram("powershell.exe", $"-command \"Import-module hyper-v; Dismount-VHD -Path '{VHDPath}'\"");
-            //VHDUtils.UnmountVHD(VHDPath);
+            //RunProgram("powershell.exe", $"-command \"Import-module hyper-v; Dismount-VHD -Path '{VHDPath}'\"");
+            VHDUtils.UnmountVHD(VHDPath);
         }
 
         public static string GetVHDLetter(string DiskId)
@@ -260,8 +261,8 @@ namespace FirmwareGen
             [Option('o', "output", HelpText = "Todo", Required = true)]
             public string Output { get; set; }
 
-            [Option('m', "mount-id", HelpText = "Todo", Required = true)]
-            public string DiskId { get; set; }
+            /*[Option('m', "mount-id", HelpText = "Todo", Required = true)]
+            public string DiskId { get; set; }*/
 
             [Option('w', "windows-dvd", HelpText = "Todo", Required = true)]
             public string WindowsDVD { get; set; }
