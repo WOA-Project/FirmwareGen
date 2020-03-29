@@ -9,7 +9,7 @@
 
         public string DriverCommand(string DriverFolder)
         {
-            return $"/Driver:\"{DriverFolder}\\DEVICE.INPUT.SYNAPTICS_RMI4\" " +
+            return $"/Driver:\"{DriverFolder}\\DEVICE.INPUT.SYNAPTICS_RMI4_F12_10\" " +
                     $"/Driver:\"{DriverFolder}\\DEVICE.SOC_QC8994.CITYMAN\" " +
                     $"/Driver:\"{DriverFolder}\\DEVICE.USB.MMO_USBC\" " +
                     $"/Driver:\"{DriverFolder}\\OEM.SOC_QC8994.MMO\" " +
@@ -27,7 +27,7 @@
 
         public string FFUFileName(string OSVersion, string Language, string Sku)
         {
-            return $"Cityman_{OSVersion}_CLIENT{Sku}_ARM64FRE_{Language}.ffu";
+            return $"{OSVersion}_CLIENT{Sku}_CITYMAN_A64FRE_{Language}.ffu";
         }
 
         public string PlatformID()

@@ -9,7 +9,7 @@
 
         public string DriverCommand(string DriverFolder)
         {
-            return $"/Driver:\"{DriverFolder}\\DEVICE.INPUT.SYNAPTICS_RMI4\" " +
+            return $"/Driver:\"{DriverFolder}\\DEVICE.INPUT.SYNAPTICS_RMI4_F12_10\" " +
                     $"/Driver:\"{DriverFolder}\\DEVICE.SOC_QC8994.HAPANERO\" " +
                     $"/Driver:\"{DriverFolder}\\OEM.SOC_QC8994.MMO\" " +
                     $"/Driver:\"{DriverFolder}\\OEM.SOC_QC8994.MMO_SOC8994\" " +
@@ -26,7 +26,7 @@
 
         public string FFUFileName(string OSVersion, string Language, string Sku)
         {
-            return $"HapaneroV2_{OSVersion}_CLIENT{Sku}_ARM64FRE_{Language}.ffu";
+            return $"{OSVersion}_CLIENT{Sku}_HAPANEROV2_A64FRE_{Language}.ffu";
         }
 
         public string PlatformID()

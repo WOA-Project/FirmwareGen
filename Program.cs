@@ -11,12 +11,12 @@ namespace FirmwareGen
 {
     class Program
     {
-        static IDeviceProfile[] deviceProfiles = new IDeviceProfile[4]
+        static IDeviceProfile[] deviceProfiles = new IDeviceProfile[]
         {
             new CitymanProfile(),
             new TalkmanProfile(),
-            new HapaneroAAProfile(),
             new HapaneroABProfile()
+            //new HapaneroAAProfile(),
         };
 
         static void Main(string[] args)
@@ -30,7 +30,7 @@ namespace FirmwareGen
 
                 try
                 {
-                    GenFirmware(o.DriverPack, o.WindowsDVD, o.WindowsIndex, o.WindowsVer, o.Output);
+                    GenFirmware(o.DriverPack, o.WindowsDVD, o.WindowsIndex, o.WindowsVer, o.Output, o.UseExistingVhd, o.DeleteVhd, !o.IsNotWindows);
                 }
                 catch (Exception ex)
                 {
@@ -41,10 +41,16 @@ namespace FirmwareGen
                 }
             });
         }
-        public static void GenFirmware(string DriverPackLocation, string WindowsDVD, string WindowsIndex, string OSBuild, string output)
+        public static void GenFirmware(string DriverPackLocation, string WindowsDVD, string WindowsIndex, string OSBuild, string output, bool UseExistingVhd, bool DeleteVhd, bool IsWindows)
         {
             var BlankVHD = @"blank.vhdx";
             var tmp = @"tmp";
+
+            if (!IsWindows)
+                UseExistingVhd = true;
+
+            if (UseExistingVhd)
+                DeleteVhd = false;
 
             if (!Directory.Exists(tmp))
                 Directory.CreateDirectory(tmp);
@@ -76,28 +82,44 @@ namespace FirmwareGen
             var SystemPartition = "Y:";
 
             var MainVHD = tmp + @"\main.vhdx";
-            Logging.Log("Copying Blank Main VHD");
-            CopyFile(BlankVHD, MainVHD);
 
-            string DiskId = MountVHD(MainVHD, false);
+            if (!UseExistingVhd)
+            {
+                Logging.Log("Copying Blank Main VHD");
+                CopyFile(BlankVHD, MainVHD);
 
-            var VHDLetter = GetVHDLetter(DiskId);
+                string DiskId = MountVHD(MainVHD, false);
 
-            Logging.Log("Applying image");
-            RunProgram(wimlib, $"apply {WindowsDVD}\\sources\\install.wim {WindowsIndex} {VHDLetter} --compact=LZX");
+                var VHDLetter = GetVHDLetter(DiskId);
 
-            Logging.Log("Slab optimization");
-            RunProgram("C:\\Windows\\System32\\defrag.exe", $"{VHDLetter} /K /X");
+                Logging.Log("Applying image");
+                RunProgram(wimlib, $"apply {WindowsDVD}\\sources\\install.wim {WindowsIndex} {VHDLetter} --compact=LZX");
 
-            Logging.Log("Applying compact flags");
-            RunProgram("reg.exe", $"load HKLM\\RTSYSTEM {VHDLetter}\\Windows\\System32\\config\\SYSTEM");
-            RunProgram("reg.exe", @"add HKLM\RTSYSTEM\Setup /v Compact /t REG_DWORD /d 1");
-            RunProgram("reg.exe", @"unload HKLM\RTSYSTEM");
-            RunProgram("reg.exe", $"load HKLM\\RTSOFTWARE {VHDLetter}\\Windows\\System32\\config\\SOFTWARE");
-            RunProgram("reg.exe", "add \"HKLM\\RTSOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Wof\" /v ForceAlgorithm /t REG_DWORD /d 1");
-            RunProgram("reg.exe", @"unload HKLM\RTSOFTWARE");
+                Logging.Log("Slab optimization");
+                RunProgram("C:\\Windows\\System32\\defrag.exe", $"{VHDLetter} /K /X");
 
-            DismountVHD(MainVHD);
+                Logging.Log("Applying compact flags");
+                RunProgram("reg.exe", $"load HKLM\\RTSYSTEM {VHDLetter}\\Windows\\System32\\config\\SYSTEM");
+                RunProgram("reg.exe", @"add HKLM\RTSYSTEM\Setup /v Compact /t REG_DWORD /d 1");
+                RunProgram("reg.exe", @"unload HKLM\RTSYSTEM");
+                RunProgram("reg.exe", $"load HKLM\\RTSOFTWARE {VHDLetter}\\Windows\\System32\\config\\SOFTWARE");
+                RunProgram("reg.exe", "add \"HKLM\\RTSOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Wof\" /v ForceAlgorithm /t REG_DWORD /d 1");
+                RunProgram("reg.exe", @"unload HKLM\RTSOFTWARE");
+
+                Logging.Log("Mounting SYSTEM");
+                RunProgram("powershell.exe", "-command \"Get-Partition -DiskNumber " + DiskId + " | Where {$_.Type -eq 'System'} | Set-Partition -NewDriveLetter '" + SystemPartition + "'.Substring(0,1)\"");
+
+                Logging.Log("Configuring boot");
+                RunProgram("bcdboot.exe", $"{VHDLetter}\\Windows /s {SystemPartition} /f UEFI /l en-us");
+
+                RunProgram("bcdedit.exe", $"/store {SystemPartition}\\EFI\\Microsoft\\Boot\\BCD " + "/set {default} testsigning on");
+                RunProgram("bcdedit.exe", $"/store {SystemPartition}\\EFI\\Microsoft\\Boot\\BCD " + "/set {default} nointegritychecks on");
+
+                Logging.Log("Unmounting SYSTEM");
+                RunProgram("powershell.exe", "-command \"Get-Partition -DiskNumber " + DiskId + " | Where {$_.Type -eq 'System'} | Remove-PartitionAccessPath -accesspath '" + SystemPartition + "'\"");
+
+                DismountVHD(MainVHD);
+            }
 
             foreach (var deviceProfile in deviceProfiles)
             {
@@ -105,7 +127,7 @@ namespace FirmwareGen
                 Logging.Log("Copying Main VHD");
                 CopyFile(MainVHD, TmpVHD);
 
-                DiskId = MountVHD(TmpVHD, false);
+                string DiskId = MountVHD(TmpVHD, false);
 
                 var TVHDLetter = GetVHDLetter(DiskId);
 
@@ -113,30 +135,32 @@ namespace FirmwareGen
                 WriteBootLoaderToDisk(DiskId, deviceProfile);
 
                 DismountVHD(TmpVHD);
-                DiskId = MountVHD(TmpVHD, false);
 
-                Logging.Log("Mounting SYSTEM");
-                RunProgram("powershell.exe", "-command \"Get-Partition -DiskNumber " + DiskId + " | Where {$_.Type -eq 'System'} | Set-Partition -NewDriveLetter '" + SystemPartition + "'.Substring(0,1)\"");
-
-                Logging.Log("Configuring boot");
-                RunProgram("bcdboot.exe", $"{TVHDLetter}\\Windows /s {SystemPartition} /f UEFI /l en-us");
-
-                RunProgram("bcdedit.exe", $"/store {SystemPartition}\\EFI\\Microsoft\\Boot\\BCD " + "/set {default} testsigning on");
-                RunProgram("bcdedit.exe", $"/store {SystemPartition}\\EFI\\Microsoft\\Boot\\BCD " + "/set {default} nointegritychecks on");
-
-                Logging.Log("Configuring supplemental boot");
-                foreach (var command in deviceProfile.SupplementaryBCDCommands())
+                if (IsWindows)
                 {
-                    RunProgram("bcdedit.exe", $"/store {SystemPartition}\\EFI\\Microsoft\\Boot\\BCD " + command);
+                    DiskId = MountVHD(TmpVHD, false);
+
+                    if (deviceProfile.SupplementaryBCDCommands().Count() > 0)
+                    {
+                        Logging.Log("Mounting SYSTEM");
+                        RunProgram("powershell.exe", "-command \"Get-Partition -DiskNumber " + DiskId + " | Where {$_.Type -eq 'System'} | Set-Partition -NewDriveLetter '" + SystemPartition + "'.Substring(0,1)\"");
+
+                        Logging.Log("Configuring supplemental boot");
+                        foreach (var command in deviceProfile.SupplementaryBCDCommands())
+                        {
+                            RunProgram("bcdedit.exe", $"/store {SystemPartition}\\EFI\\Microsoft\\Boot\\BCD " + command);
+                        }
+
+                        Logging.Log("Unmounting SYSTEM");
+                        RunProgram("powershell.exe", "-command \"Get-Partition -DiskNumber " + DiskId + " | Where {$_.Type -eq 'System'} | Remove-PartitionAccessPath -accesspath '" + SystemPartition + "'\"");
+                    }
+
+                    Logging.Log("Adding drivers");
+                    RunProgram("dism.exe", $"/Image:{TVHDLetter} /Add-Driver " + deviceProfile.DriverCommand(DriverPackLocation));
+
+                    DismountVHD(TmpVHD);
                 }
 
-                Logging.Log("Unmounting SYSTEM");
-                RunProgram("powershell.exe", "-command \"Get-Partition -DiskNumber " + DiskId + " | Where {$_.Type -eq 'System'} | Remove-PartitionAccessPath -accesspath '" + SystemPartition + "'\"");
-
-                Logging.Log("Adding drivers");
-                RunProgram("dism.exe", $"/Image:{TVHDLetter} /Add-Driver " + deviceProfile.DriverCommand(DriverPackLocation));
-
-                DismountVHD(TmpVHD);
                 DiskId = MountVHD(TmpVHD, true);
 
                 Logging.Log("Making FFU");
@@ -144,12 +168,15 @@ namespace FirmwareGen
 
                 DismountVHD(TmpVHD);
 
-                Logging.Log("Deleting Main VHD");
+                Logging.Log("Deleting Temp VHD");
                 File.Delete(TmpVHD);
             }
 
-            Logging.Log("Deleting Main VHD");
-            File.Delete(MainVHD);
+            if (DeleteVhd)
+            {
+                Logging.Log("Deleting Main VHD");
+                File.Delete(MainVHD);
+            }
         }
 
         private static void ShowProgress(ulong totalBytes, DateTime startTime, ulong BytesRead, ulong SourcePosition, bool DisplayRed)
@@ -264,8 +291,17 @@ namespace FirmwareGen
             /*[Option('m', "mount-id", HelpText = "Todo", Required = true)]
             public string DiskId { get; set; }*/
 
+            [Option('u', "use-existingvhd", HelpText = "Use the existing vhd without deleting it", Required = false, Default = false)]
+            public bool UseExistingVhd { get; set; }
+
+            [Option('c', "clean-vhd", HelpText = "Clean the vhd once done", Required = false, Default = false)]
+            public bool DeleteVhd { get; set; }
+
             [Option('w', "windows-dvd", HelpText = "Todo", Required = true)]
             public string WindowsDVD { get; set; }
+
+            [Option('z', "is-notwindows", HelpText = "Todo", Required = false, Default = false)]
+            public bool IsNotWindows { get; set; }
 
             [Option('i', "windows-index", HelpText = "Todo", Required = true)]
             public string WindowsIndex { get; set; }
