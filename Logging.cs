@@ -34,6 +34,30 @@ namespace FirmwareGen
             Error
         }
 
+        public static void ShowProgress(ulong totalBytes, DateTime startTime, ulong BytesRead, ulong SourcePosition, bool DisplayRed)
+        {
+            var now = DateTime.Now;
+            var timeSoFar = now - startTime;
+
+            var remaining = TimeSpan.FromMilliseconds(timeSoFar.TotalMilliseconds / BytesRead * (totalBytes - BytesRead));
+
+            var speed = Math.Round(SourcePosition / 1024L / 1024L / timeSoFar.TotalSeconds);
+
+            Log(string.Format("{0} {1}MB/s {2:hh\\:mm\\:ss\\.f}", GetDismLikeProgBar(int.Parse((BytesRead * 100 / totalBytes).ToString())), speed.ToString(), remaining, remaining.TotalHours, remaining.Minutes, remaining.Seconds, remaining.Milliseconds), returnline: false, severity: DisplayRed ? Logging.LoggingLevel.Warning : Logging.LoggingLevel.Information);
+        }
+
+        private static string GetDismLikeProgBar(int perc)
+        {
+            var eqsLength = (int)((double)perc / 100 * 55);
+            var bases = new string('=', eqsLength) + new string(' ', 55 - eqsLength);
+            bases = bases.Insert(28, perc + "%");
+            if (perc == 100)
+                bases = bases.Substring(1);
+            else if (perc < 10)
+                bases = bases.Insert(28, " ");
+            return "[" + bases + "]";
+        }
+
         private static readonly object lockObj = new object();
 
         public static void Log(string message, LoggingLevel severity = LoggingLevel.Information, bool returnline = true)

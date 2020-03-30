@@ -1,6 +1,6 @@
 ﻿namespace FirmwareGen
 {
-    interface IDeviceProfile
+    public interface IDeviceProfile
     {
         string Bootloader();
         string[] SupplementaryBCDCommands();
