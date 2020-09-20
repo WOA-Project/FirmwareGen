@@ -1,4 +1,7 @@
-﻿namespace FirmwareGen.DeviceProfiles
+﻿using System.IO;
+using System.Linq;
+
+namespace FirmwareGen.DeviceProfiles
 {
     class CitymanProfile : IDeviceProfile
     {
@@ -9,20 +12,10 @@
 
         public string DriverCommand(string DriverFolder)
         {
-            return $"/Driver:\"{DriverFolder}\\DEVICE.INPUT.SYNAPTICS_RMI4_F12_10\" " +
-                    $"/Driver:\"{DriverFolder}\\DEVICE.SOC_QC8994.CITYMAN\" " +
-                    $"/Driver:\"{DriverFolder}\\DEVICE.USB.MMO_USBC\" " +
-                    $"/Driver:\"{DriverFolder}\\OEM.SOC_QC8994.MMO\" " +
-                    $"/Driver:\"{DriverFolder}\\OEM.SOC_QC8994.MMO_SOC8994\" " +
-                    $"/Driver:\"{DriverFolder}\\PLATFORM.SOC_QC8994.BASE\" " +
-                    $"/Driver:\"{DriverFolder}\\PLATFORM.SOC_QC8994.MMO\" " +
-                    $"/Driver:\"{DriverFolder}\\PLATFORM.SOC_QC8994.SOC8994\" " +
-                    $"/Driver:\"{DriverFolder}\\PLATFORM.SOC_QC8994.SOC8994AB\" " +
-                    $"/Driver:\"{DriverFolder}\\SUPPORT.DESKTOP.BASE\" " +
-                    $"/Driver:\"{DriverFolder}\\SUPPORT.DESKTOP.EXTRAS\" " +
-                    $"/Driver:\"{DriverFolder}\\SUPPORT.DESKTOP.MMO_EXTRAS\" " +
-                    $"/Driver:\"{DriverFolder}\\SUPPORT.DESKTOP.MOBILE_BRIDGE\" " +
-                    $"/Driver:\"{DriverFolder}\\SUPPORT.DESKTOP.MOBILE_COMPONENTS\" /Recurse";
+            string definitionFile = $@"{DriverFolder}\definitions\950xl.txt";
+            string[] definitionPaths = File.ReadAllLines(definitionFile).Where(x => !string.IsNullOrEmpty(x)).ToArray();
+            string driverCommand = $"{string.Join(" ", definitionPaths.Select(x => $"/Driver:\"{DriverFolder}\\{x}\""))} /Recurse";
+            return driverCommand;
         }
 
         public string FFUFileName(string OSVersion, string Language, string Sku)
