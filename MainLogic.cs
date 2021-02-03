@@ -24,8 +24,9 @@ namespace FirmwareGen
             var BlankVHD = @"blank.vhdx";
             var wimlib = @"wimlib-imagex.exe";
             var Img2Ffu = @"Img2Ffu.exe";
+            var DriverUpdater = @"DriverUpdater.exe";
 
-            if (!(File.Exists(wimlib) && File.Exists(Img2Ffu) && File.Exists(BlankVHD)))
+            if (!(File.Exists(wimlib) && File.Exists(Img2Ffu) && File.Exists(BlankVHD) && File.Exists(DriverUpdater)))
             {
                 Logging.Log("Some components could not be found", Logging.LoggingLevel.Error);
                 return false;
@@ -46,7 +47,6 @@ namespace FirmwareGen
         public static string MountVHD(string VHDPath, bool readOnly)
         {
             Logging.Log("Mounting " + VHDPath + (readOnly ? " as read only" : "") + "...");
-            //RunProgram("powershell.exe", $"-command \"Import-module hyper-v; Mount-VHD -Path '{VHDPath}'" + (readOnly ? " -ReadOnly" : "") + "\"");
             var id = VHDUtils.MountVHD(VHDPath, readOnly);
             Logging.Log(id, Logging.LoggingLevel.Warning);
             return id;
@@ -55,7 +55,6 @@ namespace FirmwareGen
         public static void DismountVHD(string VHDPath)
         {
             Logging.Log("Dismounting " + VHDPath + "...");
-            //RunProgram("powershell.exe", $"-command \"Import-module hyper-v; Dismount-VHD -Path '{VHDPath}'\"");
             VHDUtils.UnmountVHD(VHDPath);
         }
 
@@ -146,6 +145,7 @@ namespace FirmwareGen
             var tmp = @"tmp";
             var SystemPartition = "Y:";
             var Img2Ffu = @"Img2Ffu.exe";
+            var DriverUpdater = @"DriverUpdater.exe";
 
             if (!Directory.Exists(tmp))
                 Directory.CreateDirectory(tmp);
@@ -183,16 +183,12 @@ namespace FirmwareGen
                 }
 
                 Logging.Log("Adding drivers");
-                RunProgram("dism.exe", $"/Image:{TVHDLetter} /Add-Driver " + deviceProfile.DriverCommand(options.DriverPack));
+                RunProgram(DriverUpdater, $"{deviceProfile.DriverCommand(options.DriverPack)} {options.DriverPack} {TVHDLetter} DisablePostUpgrade");
 
                 DismountVHD(TmpVHD);
 
-                //DiskId = MountVHD(TmpVHD, true);
-
                 Logging.Log("Making FFU");
                 RunProgram(Img2Ffu, $"-i {TmpVHD} -f \"{options.Output + "\\" + deviceProfile.FFUFileName(options.WindowsVer, "EN-US", "PRO")}\" -p {deviceProfile.PlatformID()} -o {options.WindowsVer}");
-
-                //DismountVHD(TmpVHD);
 
                 Logging.Log("Deleting Temp VHD");
                 File.Delete(TmpVHD);

@@ -12,10 +12,7 @@ namespace FirmwareGen.DeviceProfiles
 
         public string DriverCommand(string DriverFolder)
         {
-            string definitionFile = $@"{DriverFolder}\definitions\rx130ab.txt";
-            string[] definitionPaths = File.ReadAllLines(definitionFile).Where(x => !string.IsNullOrEmpty(x)).ToArray();
-            string driverCommand = $"{string.Join(" ", definitionPaths.Select(x => $"/Driver:\"{DriverFolder}\\{x}\""))} /Recurse";
-            return driverCommand;
+            return $@"{DriverFolder}\definitions\rx130ab.txt";
         }
 
         public string FFUFileName(string OSVersion, string Language, string Sku)
