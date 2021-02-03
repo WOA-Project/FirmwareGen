@@ -187,12 +187,12 @@ namespace FirmwareGen
 
                 DismountVHD(TmpVHD);
 
-                DiskId = MountVHD(TmpVHD, true);
+                //DiskId = MountVHD(TmpVHD, true);
 
                 Logging.Log("Making FFU");
-                RunProgram(Img2Ffu, $"-i \\\\.\\PhysicalDrive{DiskId} -f \"{options.Output + "\\" + deviceProfile.FFUFileName(options.WindowsVer, "EN-US", "PRO")}\" -p {deviceProfile.PlatformID()} -o {options.WindowsVer}");
+                RunProgram(Img2Ffu, $"-i {TmpVHD} -f \"{options.Output + "\\" + deviceProfile.FFUFileName(options.WindowsVer, "EN-US", "PRO")}\" -p {deviceProfile.PlatformID()} -o {options.WindowsVer}");
 
-                DismountVHD(TmpVHD);
+                //DismountVHD(TmpVHD);
 
                 Logging.Log("Deleting Temp VHD");
                 File.Delete(TmpVHD);
