@@ -3,21 +3,26 @@ using System.Linq;
 
 namespace FirmwareGen.DeviceProfiles
 {
-    class HapaneroABProfile : IDeviceProfile
+    internal class HapaneroABProfile : IDeviceProfile
     {
         public string Bootloader()
         {
             return @"bin\RX130_MSM8994AB.bin";
         }
 
+        public string UEFIELFPath()
+        {
+            return @"bin\RX130.elf";
+        }
+
         public string DriverCommand(string DriverFolder)
         {
-            return $@"{DriverFolder}\definitions\rx130ab.txt";
+            return $@"{DriverFolder}\definitions\Desktop\ARM64\Internal\rx130ab.txt";
         }
 
         public string FFUFileName(string OSVersion, string Language, string Sku)
         {
-            return $"{OSVersion}_CLIENT{Sku}_HAPANEROV2_A64FRE_{Language}.ffu";
+            return $"RX130v2_1078.0053.1067.0000.{OSVersion}_CLIENT{Sku}_a64fre_{Language}_unsigned.ffu";
         }
 
         public string PlatformID()
@@ -27,7 +32,7 @@ namespace FirmwareGen.DeviceProfiles
 
         public string[] SupplementaryBCDCommands()
         {
-            return new string[0];
+            return System.Array.Empty<string>();
         }
     }
 }

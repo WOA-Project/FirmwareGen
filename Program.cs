@@ -2,12 +2,12 @@
 
 namespace FirmwareGen
 {
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Logging.Log("FirmwareGen");
-            Logging.Log("Copyright (c) 2019-2020, Gustave Monce - gus33000.me - @gus33000");
+            Logging.Log("Copyright (c) 2019-2021, Gustave Monce - gus33000.me - @gus33000");
             Logging.Log("Released under the MIT license at github.com/gus33000/FirmwareGen");
             Logging.Log("");
 

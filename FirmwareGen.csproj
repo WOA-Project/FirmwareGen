@@ -21,6 +21,9 @@
 		<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
 	<ItemGroup>
+	  <None Remove="DeviceProfiles\TalkmanProfile.cs~RF1387fa2.TMP" />
+	</ItemGroup>
+	<ItemGroup>
 		<PackageReference Include="CommandLineParser" Version="2.9.0-preview1" />
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 		<PackageReference Include="System.Data.DataSetExtensions" Version="4.6.0-preview3.19128.7" />

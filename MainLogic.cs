@@ -9,9 +9,9 @@ using static FirmwareGen.CLIOptions;
 
 namespace FirmwareGen
 {
-    public class MainLogic
+    public static class MainLogic
     {
-        static IDeviceProfile[] deviceProfiles = new IDeviceProfile[]
+        private static readonly IDeviceProfile[] deviceProfiles = new IDeviceProfile[]
         {
             new CitymanProfile(),
             new TalkmanProfile(),
@@ -21,10 +21,10 @@ namespace FirmwareGen
 
         public static bool VerifyAllComponentsArePresent()
         {
-            var BlankVHD = @"blank.vhdx";
-            var wimlib = @"wimlib-imagex.exe";
-            var Img2Ffu = @"Img2Ffu.exe";
-            var DriverUpdater = @"DriverUpdater.exe";
+            const string BlankVHD = "blank.vhdx";
+            const string wimlib = "wimlib-imagex.exe";
+            const string Img2Ffu = "Img2Ffu.exe";
+            const string DriverUpdater = "DriverUpdater.exe";
 
             if (!(File.Exists(wimlib) && File.Exists(Img2Ffu) && File.Exists(BlankVHD) && File.Exists(DriverUpdater)))
             {
@@ -32,7 +32,7 @@ namespace FirmwareGen
                 return false;
             }
 
-            foreach (var profile in deviceProfiles)
+            foreach (IDeviceProfile profile in deviceProfiles)
             {
                 if (!File.Exists(profile.Bootloader()))
                 {
@@ -47,7 +47,7 @@ namespace FirmwareGen
         public static string MountVHD(string VHDPath, bool readOnly)
         {
             Logging.Log("Mounting " + VHDPath + (readOnly ? " as read only" : "") + "...");
-            var id = VHDUtils.MountVHD(VHDPath, readOnly);
+            string id = VHDUtils.MountVHD(VHDPath, readOnly);
             Logging.Log(id, Logging.LoggingLevel.Warning);
             return id;
         }
@@ -61,11 +61,13 @@ namespace FirmwareGen
         public static string GetVHDLetter(string DiskId)
         {
             string TVHDLetter = null;
-            Process proc = new Process();
-            proc.StartInfo = new ProcessStartInfo("powershell.exe", "-command \"(Get-Partition -DiskNumber " + DiskId + " | Where {$_.DriveLetter}).DriveLetter\"");
-            proc.StartInfo.UseShellExecute = false;
-            proc.StartInfo.RedirectStandardOutput = true;
-            proc.StartInfo.CreateNoWindow = true;
+            Process proc = new();
+            proc.StartInfo = new ProcessStartInfo("powershell.exe", "-command \"(Get-Partition -DiskNumber " + DiskId + " | Where {$_.DriveLetter}).DriveLetter\"")
+            {
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
+            };
             proc.Start();
             while (!proc.StandardOutput.EndOfStream)
             {
@@ -79,18 +81,20 @@ namespace FirmwareGen
 
         public static void RunProgram(string Program, string Arguments)
         {
-            Process proc = new Process();
-            proc.StartInfo = new ProcessStartInfo(Program, Arguments);
-            proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            proc.StartInfo.UseShellExecute = false;
+            Process proc = new();
+            proc.StartInfo = new ProcessStartInfo(Program, Arguments)
+            {
+                WindowStyle = ProcessWindowStyle.Hidden,
+                UseShellExecute = false
+            };
             proc.Start();
             proc.WaitForExit();
         }
 
         public static void CopyFile(string Source, string Dest)
         {
-            var _source = new FileInfo(Source);
-            var _destination = new FileInfo(Dest);
+            FileInfo _source = new(Source);
+            FileInfo _destination = new(Dest);
 
             DateTime startTime = DateTime.Now;
             _source.CopyTo(_destination, x => Logging.ShowProgress(100, startTime, (UInt64)x, (UInt64)x, false));
@@ -99,17 +103,17 @@ namespace FirmwareGen
 
         public static void GenerateWindowsBaseVHDX(GenerateWindowsOptions options)
         {
-            var BlankVHD = @"blank.vhdx";
-            var wimlib = @"wimlib-imagex.exe";
+            const string BlankVHD = "blank.vhdx";
+            const string wimlib = "wimlib-imagex.exe";
 
-            var SystemPartition = "Y:";
+            const string SystemPartition = "Y:";
 
             Logging.Log("Copying Blank Main VHD");
             CopyFile(BlankVHD, options.Output);
 
             string DiskId = MountVHD(options.Output, false);
 
-            var VHDLetter = GetVHDLetter(DiskId);
+            string VHDLetter = GetVHDLetter(DiskId);
 
             Logging.Log("Applying image");
             RunProgram(wimlib, $"apply {options.WindowsDVD}\\sources\\install.wim {options.WindowsIndex} {VHDLetter} --compact=LZX");
@@ -142,23 +146,25 @@ namespace FirmwareGen
 
         public static void GenerateWindowsFFU(GenerateWindowsFFUOptions options)
         {
-            var tmp = @"tmp";
-            var SystemPartition = "Y:";
-            var Img2Ffu = @"Img2Ffu.exe";
-            var DriverUpdater = @"DriverUpdater.exe";
+            const string tmp = "tmp";
+            const string SystemPartition = "Y:";
+            const string Img2Ffu = "Img2Ffu.exe";
+            const string DriverUpdater = "DriverUpdater.exe";
 
             if (!Directory.Exists(tmp))
-                Directory.CreateDirectory(tmp);
-
-            foreach (var deviceProfile in deviceProfiles)
             {
-                var TmpVHD = tmp + @"\temp.vhdx";
+                Directory.CreateDirectory(tmp);
+            }
+
+            foreach (IDeviceProfile deviceProfile in deviceProfiles)
+            {
+                const string TmpVHD = tmp + @"\temp.vhdx";
                 Logging.Log("Copying Main VHD");
                 CopyFile(options.Input, TmpVHD);
 
                 string DiskId = MountVHD(TmpVHD, false);
 
-                var TVHDLetter = GetVHDLetter(DiskId);
+                string TVHDLetter = GetVHDLetter(DiskId);
 
                 Logging.Log("Writing Bootloader");
                 WriteBootLoaderToDisk(DiskId, deviceProfile);
@@ -167,13 +173,16 @@ namespace FirmwareGen
 
                 DiskId = MountVHD(TmpVHD, false);
 
-                if (deviceProfile.SupplementaryBCDCommands().Count() > 0)
+                Logging.Log("Writing UEFI");
+                File.Copy(deviceProfile.UEFIELFPath(), $"{TVHDLetter}\\EFIESP\\UEFI.elf", true);
+
+                if (deviceProfile.SupplementaryBCDCommands().Length > 0)
                 {
                     Logging.Log("Mounting SYSTEM");
                     RunProgram("powershell.exe", "-command \"Get-Partition -DiskNumber " + DiskId + " | Where {$_.Type -eq 'System'} | Set-Partition -NewDriveLetter '" + SystemPartition + "'.Substring(0,1)\"");
 
                     Logging.Log("Configuring supplemental boot");
-                    foreach (var command in deviceProfile.SupplementaryBCDCommands())
+                    foreach (string command in deviceProfile.SupplementaryBCDCommands())
                     {
                         RunProgram("bcdedit.exe", $"/store {SystemPartition}\\EFI\\Microsoft\\Boot\\BCD " + command);
                     }
@@ -183,12 +192,18 @@ namespace FirmwareGen
                 }
 
                 Logging.Log("Adding drivers");
-                RunProgram(DriverUpdater, $"{deviceProfile.DriverCommand(options.DriverPack)} {options.DriverPack} {TVHDLetter} DisablePostUpgrade");
+                RunProgram(DriverUpdater, $"{deviceProfile.DriverCommand(options.DriverPack)} {options.DriverPack} {TVHDLetter}");
 
                 DismountVHD(TmpVHD);
 
                 Logging.Log("Making FFU");
-                RunProgram(Img2Ffu, $"-i {TmpVHD} -f \"{options.Output + "\\" + deviceProfile.FFUFileName(options.WindowsVer, "EN-US", "PRO")}\" -p {deviceProfile.PlatformID()} -o {options.WindowsVer}");
+                string version = options.WindowsVer;
+                if (version.Split(".").Length == 4)
+                {
+                    version = string.Join(".", version.Split(".").Skip(2));
+                }
+
+                RunProgram(Img2Ffu, $"-i {TmpVHD} -f \"{options.Output + "\\" + deviceProfile.FFUFileName(version, "en-us", "PROFESSIONAL")}\" -p {deviceProfile.PlatformID()} -o {options.WindowsVer}");
 
                 Logging.Log("Deleting Temp VHD");
                 File.Delete(TmpVHD);
@@ -197,21 +212,24 @@ namespace FirmwareGen
 
         public static void WriteBootLoaderToDisk(string DiskId, IDeviceProfile deviceProfile)
         {
-            var chunkSize = 131072;
-            DeviceStream ds = new DeviceStream(DiskId, FileAccess.ReadWrite);
+            const int chunkSize = 131072;
+            DeviceStream ds = new(DiskId, FileAccess.ReadWrite);
             ds.Seek(0, SeekOrigin.Begin);
             byte[] bootloader = File.ReadAllBytes(deviceProfile.Bootloader());
 
-            var sectors = bootloader.Count() / chunkSize;
+            int sectors = bootloader.Length / chunkSize;
 
             DateTime startTime = DateTime.Now;
-            using (BinaryReader br = new BinaryReader(new MemoryStream(bootloader)))
+            using (BinaryReader br = new(new MemoryStream(bootloader)))
+            {
                 for (int i = 0; i < sectors; i++)
                 {
-                    var buff = br.ReadBytes(chunkSize);
+                    byte[] buff = br.ReadBytes(chunkSize);
                     ds.Write(buff, 0, chunkSize);
-                    Logging.ShowProgress((UInt64)bootloader.Count(), startTime, (UInt64)((i + 1) * chunkSize), (UInt64)((i + 1) * chunkSize), false);
+                    Logging.ShowProgress((UInt64)bootloader.Length, startTime, (UInt64)((i + 1) * chunkSize), (UInt64)((i + 1) * chunkSize), false);
                 }
+            }
+
             Logging.Log("");
 
             ds.Dispose();
@@ -219,21 +237,22 @@ namespace FirmwareGen
 
         public static void GenerateOtherFFU(GenerateOtherFFUOptions options)
         {
-            var tmp = @"tmp";
-            var Img2Ffu = @"Img2Ffu.exe";
+            const string tmp = "tmp";
+            const string Img2Ffu = "Img2Ffu.exe";
 
             if (!Directory.Exists(tmp))
-                Directory.CreateDirectory(tmp);
-
-            foreach (var deviceProfile in deviceProfiles)
             {
-                var TmpVHD = tmp + @"\temp.vhdx";
+                Directory.CreateDirectory(tmp);
+            }
+
+            foreach (IDeviceProfile deviceProfile in deviceProfiles)
+            {
+                const string TmpVHD = tmp + @"\temp.vhdx";
                 Logging.Log("Copying Main VHD");
                 CopyFile(options.Input, TmpVHD);
 
                 string DiskId = MountVHD(TmpVHD, false);
-
-                var TVHDLetter = GetVHDLetter(DiskId);
+                _ = GetVHDLetter(DiskId);
 
                 Logging.Log("Writing Bootloader");
                 WriteBootLoaderToDisk(DiskId, deviceProfile);

@@ -2,7 +2,7 @@
 
 namespace FirmwareGen
 {
-    public class CLIOptions
+    public static class CLIOptions
     {
         [Verb("generate-windows-base-vhdx", HelpText = "Generates a Windows Base VHDX")]
         public class GenerateWindowsOptions
@@ -20,7 +20,7 @@ namespace FirmwareGen
         [Verb("generate-windows-ffu", HelpText = "Generates a ffu from a Windows Base VHDX")]
         public class GenerateWindowsFFUOptions
         {
-            [Option('d', "driver-pack", HelpText = @"Todo", Required = true)]
+            [Option('d', "driver-pack", HelpText = "Todo", Required = true)]
             public string DriverPack { get; set; }
 
             [Option('o', "output", HelpText = "Todo", Required = true)]
@@ -49,7 +49,9 @@ namespace FirmwareGen
         public static void ParseOptionsAndTakeAction(string[] args)
         {
             if (!MainLogic.VerifyAllComponentsArePresent())
+            {
                 return;
+            }
 
             Parser.Default.ParseArguments<GenerateWindowsOptions, GenerateWindowsFFUOptions, GenerateOtherFFUOptions>(args)
                 .WithParsed<GenerateWindowsOptions>(opts => MainLogic.GenerateWindowsBaseVHDX(opts))

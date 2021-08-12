@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace FirmwareGen
 {
-    class VHDUtils
+    internal static class VHDUtils
     {
         /// <summary>
         ///     Mounts FFU or VHD files on a target system.
@@ -19,38 +19,53 @@ namespace FirmwareGen
         /// </returns>
         public static string MountVHD(string vhdfile, bool readOnly)
         {
-            var openParameters = new NativeMethods.OPEN_VIRTUAL_DISK_PARAMETERS();
-            openParameters.Version = NativeMethods.OPEN_VIRTUAL_DISK_VERSION.OPEN_VIRTUAL_DISK_VERSION_1;
+            NativeMethods.OPEN_VIRTUAL_DISK_PARAMETERS openParameters = new()
+            {
+                Version = NativeMethods.OPEN_VIRTUAL_DISK_VERSION.OPEN_VIRTUAL_DISK_VERSION_1
+            };
             openParameters.Version1.RWDepth = NativeMethods.OPEN_VIRTUAL_DISK_RW_DEPTH_DEFAULT;
 
-            var openStorageType = new NativeMethods.VIRTUAL_STORAGE_TYPE();
-            openStorageType.DeviceId = NativeMethods.VIRTUAL_STORAGE_TYPE_DEVICE_UNKNOWN;
-            openStorageType.VendorId = NativeMethods.VIRTUAL_STORAGE_TYPE_VENDOR_UNKNOWN;
+            NativeMethods.VIRTUAL_STORAGE_TYPE openStorageType = new()
+            {
+                DeviceId = NativeMethods.VIRTUAL_STORAGE_TYPE_DEVICE_UNKNOWN,
+                VendorId = NativeMethods.VIRTUAL_STORAGE_TYPE_VENDOR_UNKNOWN
+            };
 
-            var attachParameters = new NativeMethods.ATTACH_VIRTUAL_DISK_PARAMETERS();
-            attachParameters.Version = NativeMethods.ATTACH_VIRTUAL_DISK_VERSION.ATTACH_VIRTUAL_DISK_VERSION_1;
+            NativeMethods.ATTACH_VIRTUAL_DISK_PARAMETERS attachParameters = new()
+            {
+                Version = NativeMethods.ATTACH_VIRTUAL_DISK_VERSION.ATTACH_VIRTUAL_DISK_VERSION_1
+            };
 
-            var handle = IntPtr.Zero;
+            IntPtr handle = IntPtr.Zero;
 
-            var openResult = NativeMethods.OpenVirtualDisk(ref openStorageType, vhdfile, NativeMethods.VIRTUAL_DISK_ACCESS_MASK.VIRTUAL_DISK_ACCESS_ALL, NativeMethods.OPEN_VIRTUAL_DISK_FLAG.OPEN_VIRTUAL_DISK_FLAG_NONE, ref openParameters, ref handle);
+            int openResult = NativeMethods.OpenVirtualDisk(ref openStorageType, vhdfile, NativeMethods.VIRTUAL_DISK_ACCESS_MASK.VIRTUAL_DISK_ACCESS_ALL, NativeMethods.OPEN_VIRTUAL_DISK_FLAG.OPEN_VIRTUAL_DISK_FLAG_NONE, ref openParameters, ref handle);
 
             if (openResult != NativeMethods.ERROR_SUCCESS)
+            {
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Native error {0}.", openResult));
+            }
 
             NativeMethods.ATTACH_VIRTUAL_DISK_FLAG flags = NativeMethods.ATTACH_VIRTUAL_DISK_FLAG.ATTACH_VIRTUAL_DISK_FLAG_PERMANENT_LIFETIME;
 
             if (readOnly)
+            {
                 flags |= NativeMethods.ATTACH_VIRTUAL_DISK_FLAG.ATTACH_VIRTUAL_DISK_FLAG_READ_ONLY;
+            }
 
-            var attachResult = NativeMethods.AttachVirtualDisk(handle, IntPtr.Zero, flags, 0, ref attachParameters, IntPtr.Zero);
+            int attachResult = NativeMethods.AttachVirtualDisk(handle, IntPtr.Zero, flags, 0, ref attachParameters, IntPtr.Zero);
 
             if (attachResult != NativeMethods.ERROR_SUCCESS)
+            {
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Native error {0}.", attachResult));
+            }
 
             int bufferSize = 260;
-            StringBuilder vhdPhysicalPath = new StringBuilder(bufferSize);
+            StringBuilder vhdPhysicalPath = new(bufferSize);
 
-            NativeMethods.GetVirtualDiskPhysicalPath(handle, ref bufferSize, vhdPhysicalPath);
+            if (NativeMethods.GetVirtualDiskPhysicalPath(handle, ref bufferSize, vhdPhysicalPath) != NativeMethods.ERROR_SUCCESS)
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Native error {0}.", attachResult));
+            }
 
             NativeMethods.CloseHandle(handle);
 
@@ -59,31 +74,39 @@ namespace FirmwareGen
 
         public static void UnmountVHD(string vhdfile)
         {
-            var openParameters = new NativeMethods.OPEN_VIRTUAL_DISK_PARAMETERS();
-            openParameters.Version = NativeMethods.OPEN_VIRTUAL_DISK_VERSION.OPEN_VIRTUAL_DISK_VERSION_1;
+            NativeMethods.OPEN_VIRTUAL_DISK_PARAMETERS openParameters = new()
+            {
+                Version = NativeMethods.OPEN_VIRTUAL_DISK_VERSION.OPEN_VIRTUAL_DISK_VERSION_1
+            };
             openParameters.Version1.RWDepth = NativeMethods.OPEN_VIRTUAL_DISK_RW_DEPTH_DEFAULT;
 
-            var openStorageType = new NativeMethods.VIRTUAL_STORAGE_TYPE();
-            openStorageType.DeviceId = NativeMethods.VIRTUAL_STORAGE_TYPE_DEVICE_UNKNOWN;
-            openStorageType.VendorId = NativeMethods.VIRTUAL_STORAGE_TYPE_VENDOR_UNKNOWN;
+            NativeMethods.VIRTUAL_STORAGE_TYPE openStorageType = new()
+            {
+                DeviceId = NativeMethods.VIRTUAL_STORAGE_TYPE_DEVICE_UNKNOWN,
+                VendorId = NativeMethods.VIRTUAL_STORAGE_TYPE_VENDOR_UNKNOWN
+            };
 
-            var handle = IntPtr.Zero;
+            IntPtr handle = IntPtr.Zero;
 
-            var openResult = NativeMethods.OpenVirtualDisk(ref openStorageType, vhdfile, NativeMethods.VIRTUAL_DISK_ACCESS_MASK.VIRTUAL_DISK_ACCESS_ALL, NativeMethods.OPEN_VIRTUAL_DISK_FLAG.OPEN_VIRTUAL_DISK_FLAG_NONE, ref openParameters, ref handle);
+            int openResult = NativeMethods.OpenVirtualDisk(ref openStorageType, vhdfile, NativeMethods.VIRTUAL_DISK_ACCESS_MASK.VIRTUAL_DISK_ACCESS_ALL, NativeMethods.OPEN_VIRTUAL_DISK_FLAG.OPEN_VIRTUAL_DISK_FLAG_NONE, ref openParameters, ref handle);
 
             if (openResult != NativeMethods.ERROR_SUCCESS)
+            {
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Native error {0}.", openResult));
+            }
 
-            var dettachResult = NativeMethods.DetachVirtualDisk(handle, NativeMethods.DETACH_VIRTUAL_DISK_FLAG.DETACH_VIRTUAL_DISK_FLAG_NONE, 0);
+            int dettachResult = NativeMethods.DetachVirtualDisk(handle, NativeMethods.DETACH_VIRTUAL_DISK_FLAG.DETACH_VIRTUAL_DISK_FLAG_NONE, 0);
 
             if (dettachResult != NativeMethods.ERROR_SUCCESS)
+            {
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Native error {0}.", dettachResult));
+            }
 
             NativeMethods.CloseHandle(handle);
         }
     }
 
-    internal class NativeMethods
+    internal static class NativeMethods
     {
         public enum ATTACH_VIRTUAL_DISK_FLAG
         {
@@ -119,11 +142,11 @@ namespace FirmwareGen
             VIRTUAL_DISK_ACCESS_ATTACH_RW = 0x00020000,
             VIRTUAL_DISK_ACCESS_DETACH = 0x00040000,
             VIRTUAL_DISK_ACCESS_GET_INFO = 0x00080000,
+            VIRTUAL_DISK_ACCESS_READ = 0x000d0000,
             VIRTUAL_DISK_ACCESS_CREATE = 0x00100000,
             VIRTUAL_DISK_ACCESS_METAOPS = 0x00200000,
-            VIRTUAL_DISK_ACCESS_READ = 0x000d0000,
-            VIRTUAL_DISK_ACCESS_ALL = 0x003f0000,
-            VIRTUAL_DISK_ACCESS_WRITABLE = 0x00320000
+            VIRTUAL_DISK_ACCESS_WRITABLE = 0x00320000,
+            VIRTUAL_DISK_ACCESS_ALL = 0x003f0000
         }
 
         public enum DETACH_VIRTUAL_DISK_FLAG
@@ -137,8 +160,8 @@ namespace FirmwareGen
         public const int VIRTUAL_STORAGE_TYPE_DEVICE_VHD = 2;
         public const int VIRTUAL_STORAGE_TYPE_DEVICE_VHDX = 3;
 
-        public static readonly Guid VIRTUAL_STORAGE_TYPE_VENDOR_MICROSOFT = new Guid("EC984AEC-A0F9-47e9-901F-71415A66345B");
-        public static readonly Guid VIRTUAL_STORAGE_TYPE_VENDOR_UNKNOWN = new Guid("00000000-0000-0000-0000-000000000000");
+        public static readonly Guid VIRTUAL_STORAGE_TYPE_VENDOR_MICROSOFT = new("EC984AEC-A0F9-47e9-901F-71415A66345B");
+        public static readonly Guid VIRTUAL_STORAGE_TYPE_VENDOR_UNKNOWN = new("00000000-0000-0000-0000-000000000000");
 
         [DllImport("virtdisk.dll", CharSet = CharSet.Unicode)]
         public static extern int AttachVirtualDisk(IntPtr VirtualDiskHandle, IntPtr SecurityDescriptor, ATTACH_VIRTUAL_DISK_FLAG Flags, int ProviderSpecificFlags, ref ATTACH_VIRTUAL_DISK_PARAMETERS Parameters, IntPtr Overlapped);

@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("FirmwareGen")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyCopyright("Copyright (c) 2019-2021, Gustave Monce - gus33000.me - @gus33000")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

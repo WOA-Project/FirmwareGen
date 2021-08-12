@@ -25,8 +25,15 @@ using System;
 
 namespace FirmwareGen
 {
-    internal class Logging
+    internal static class Logging
     {
+        private static readonly ConsoleColor StockColor;
+
+        static Logging()
+        {
+            StockColor = Console.ForegroundColor;
+        }
+
         public enum LoggingLevel
         {
             Information,
@@ -36,41 +43,46 @@ namespace FirmwareGen
 
         public static void ShowProgress(ulong totalBytes, DateTime startTime, ulong BytesRead, ulong SourcePosition, bool DisplayRed)
         {
-            var now = DateTime.Now;
-            var timeSoFar = now - startTime;
+            DateTime now = DateTime.Now;
+            TimeSpan timeSoFar = now - startTime;
 
-            var remaining = TimeSpan.FromMilliseconds(timeSoFar.TotalMilliseconds / BytesRead * (totalBytes - BytesRead));
+            TimeSpan remaining = TimeSpan.FromMilliseconds(timeSoFar.TotalMilliseconds / BytesRead * (totalBytes - BytesRead));
 
-            var speed = Math.Round(SourcePosition / 1024L / 1024L / timeSoFar.TotalSeconds);
+            double speed = Math.Round(SourcePosition / 1024L / 1024L / timeSoFar.TotalSeconds);
 
-            Log(string.Format("{0} {1}MB/s {2:hh\\:mm\\:ss\\.f}", GetDismLikeProgBar(int.Parse((BytesRead * 100 / totalBytes).ToString())), speed.ToString(), remaining, remaining.TotalHours, remaining.Minutes, remaining.Seconds, remaining.Milliseconds), returnline: false, severity: DisplayRed ? Logging.LoggingLevel.Warning : Logging.LoggingLevel.Information);
+            Log(string.Format("{0} {1}MB/s {2:hh\\:mm\\:ss\\.f}", GetDismLikeProgBar(int.Parse((BytesRead * 100 / totalBytes).ToString())), speed.ToString(), remaining, remaining.TotalHours, remaining.Minutes, remaining.Seconds, remaining.Milliseconds), severity: DisplayRed ? LoggingLevel.Warning : LoggingLevel.Information, returnline: false);
         }
 
         private static string GetDismLikeProgBar(int perc)
         {
-            var eqsLength = (int)((double)perc / 100 * 55);
-            var bases = new string('=', eqsLength) + new string(' ', 55 - eqsLength);
+            int eqsLength = (int)((double)perc / 100 * 55);
+            string bases = new string('=', eqsLength) + new string(' ', 55 - eqsLength);
             bases = bases.Insert(28, perc + "%");
             if (perc == 100)
-                bases = bases.Substring(1);
+            {
+                bases = bases[1..];
+            }
             else if (perc < 10)
+            {
                 bases = bases.Insert(28, " ");
+            }
+
             return "[" + bases + "]";
         }
 
-        private static readonly object lockObj = new object();
+        private static readonly object lockObj = new();
 
         public static void Log(string message, LoggingLevel severity = LoggingLevel.Information, bool returnline = true)
         {
             lock (lockObj)
             {
-                if (message == "")
+                if (message?.Length == 0)
                 {
                     Console.WriteLine();
                     return;
                 }
 
-                var msg = "";
+                string msg = "";
 
                 switch (severity)
                 {
@@ -84,16 +96,20 @@ namespace FirmwareGen
                         break;
                     case LoggingLevel.Information:
                         msg = "Information";
-                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.ForegroundColor = StockColor;
                         break;
                 }
 
                 if (returnline)
+                {
                     Console.WriteLine(DateTime.Now.ToString("'['HH':'mm':'ss']'") + "[" + msg + "] " + message);
+                }
                 else
+                {
                     Console.Write("\r" + DateTime.Now.ToString("'['HH':'mm':'ss']'") + "[" + msg + "] " + message);
+                }
 
-                Console.ForegroundColor = ConsoleColor.White;
+                Console.ForegroundColor = StockColor;
             }
         }
     }
