@@ -119,7 +119,7 @@ namespace FirmwareGen
             RunProgram(wimlib, $"apply {options.WindowsDVD}\\sources\\install.wim {options.WindowsIndex} {VHDLetter} --compact=LZX");
 
             Logging.Log("Slab optimization");
-            RunProgram("C:\\Windows\\System32\\defrag.exe", $"{VHDLetter} /K /X");
+            RunProgram("defrag.exe", $"{VHDLetter} /K /X");
 
             Logging.Log("Applying compact flags");
             RunProgram("reg.exe", $"load HKLM\\RTSYSTEM {VHDLetter}\\Windows\\System32\\config\\SYSTEM");
@@ -262,7 +262,7 @@ namespace FirmwareGen
                 DiskId = MountVHD(TmpVHD, true);
 
                 Logging.Log("Making FFU");
-                RunProgram(Img2Ffu, $"-i \\\\.\\PhysicalDrive{DiskId} -f \"{options.Output + "\\" + deviceProfile.FFUFileName(options.Ver, "EN-US", "PRO")}\" -p {deviceProfile.PlatformID()} -o {options.Ver}");
+                RunProgram(Img2Ffu, $"-i \\\\.\\PhysicalDrive{DiskId} -f \"{options.Output + "\\" + deviceProfile.FFUFileName(options.Ver, "en-us", "PROFESSIONAL")}\" -p {deviceProfile.PlatformID()} -o {options.Ver}");
 
                 DismountVHD(TmpVHD);
 

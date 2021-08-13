@@ -393,7 +393,7 @@ namespace FirmwareGen.Streams
             {
                 if (disposing)
                 {
-                    if (handleValue != null)
+                    if (handleValue != null && !handleValue.IsInvalid && !handleValue.IsClosed)
                     {
                         uint lpBytesReturned = 0;
                         uint result = DeviceIoControl(handleValue, FSCTL_UNLOCK_VOLUME, IntPtr.Zero, 0, IntPtr.Zero, 0, ref lpBytesReturned, IntPtr.Zero);
