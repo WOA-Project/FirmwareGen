@@ -13,7 +13,7 @@ namespace FirmwareGen
         {
             new CitymanProfile(),
             new TalkmanProfile(),
-            //new HapaneroABProfile()
+            new HapaneroABProfile()
             //new HapaneroAAProfile(),
         };
 

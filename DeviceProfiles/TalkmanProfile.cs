@@ -22,7 +22,7 @@ namespace FirmwareGen.DeviceProfiles
 
         public string FFUFileName(string OSVersion, string Language, string Sku)
         {
-            return $"RM1114_1078.0053.1067.0000.{OSVersion}_CLIENT{Sku}_a64fre_{Language}_unsigned.ffu";
+            return $"RM1104_1078.0053.1067.0000.{OSVersion}_CLIENT{Sku}_a64fre_{Language}_unsigned.ffu";
         }
 
         public string PlatformID()

@@ -365,17 +365,24 @@ namespace FirmwareGen.Streams
 
         public override void Close()
         {
-            uint lpBytesReturned = 0;
-            uint result = DeviceIoControl(handleValue, FSCTL_UNLOCK_VOLUME, IntPtr.Zero, 0, IntPtr.Zero, 0, ref lpBytesReturned, IntPtr.Zero);
-
-            if (result == 0)
+            if (handleValue != null && !handleValue.IsInvalid && !handleValue.IsClosed)
             {
-                Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
-            }
+                try
+                {
+                    uint lpBytesReturned = 0;
+                    uint result = DeviceIoControl(handleValue, FSCTL_UNLOCK_VOLUME, IntPtr.Zero, 0, IntPtr.Zero, 0, ref lpBytesReturned, IntPtr.Zero);
 
-            handleValue.Close();
-            handleValue.Dispose();
-            handleValue = null;
+                    if (result == 0)
+                    {
+                        Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
+                    }
+                }
+                catch { }
+
+                handleValue.Close();
+                handleValue.Dispose();
+                handleValue = null;
+            }
             base.Close();
         }
 
@@ -395,13 +402,17 @@ namespace FirmwareGen.Streams
                 {
                     if (handleValue != null && !handleValue.IsInvalid && !handleValue.IsClosed)
                     {
-                        uint lpBytesReturned = 0;
-                        uint result = DeviceIoControl(handleValue, FSCTL_UNLOCK_VOLUME, IntPtr.Zero, 0, IntPtr.Zero, 0, ref lpBytesReturned, IntPtr.Zero);
-
-                        if (result == 0)
+                        try
                         {
-                            Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
+                            uint lpBytesReturned = 0;
+                            uint result = DeviceIoControl(handleValue, FSCTL_UNLOCK_VOLUME, IntPtr.Zero, 0, IntPtr.Zero, 0, ref lpBytesReturned, IntPtr.Zero);
+
+                            if (result == 0)
+                            {
+                                Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
+                            }
                         }
+                        catch { }
 
                         handleValue.Close();
                         handleValue.Dispose();
