@@ -23,7 +23,7 @@ namespace FirmwareGen.Extensions
             for (long size = 0; size < len; size += read)
             {
                 int progress;
-                if ((progress = ((int)((size / flen) * 100))) != reportedProgress)
+                if ((progress = (int)(size / flen * 100)) != reportedProgress)
                 {
                     progressCallback(reportedProgress = progress);
                 }

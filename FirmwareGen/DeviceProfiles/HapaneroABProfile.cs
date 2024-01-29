@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System.Linq;
-
-namespace FirmwareGen.DeviceProfiles
+﻿namespace FirmwareGen.DeviceProfiles
 {
     internal class HapaneroABProfile : IDeviceProfile
     {
@@ -32,7 +29,7 @@ namespace FirmwareGen.DeviceProfiles
 
         public string[] SupplementaryBCDCommands()
         {
-            return System.Array.Empty<string>();
+            return [];
         }
     }
 }

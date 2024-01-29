@@ -22,12 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 */
-using System;
-using System.Runtime.InteropServices;
-using System.IO;
 using Microsoft.Win32.SafeHandles;
+using System;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace FirmwareGen.Streams
 {
@@ -104,21 +104,6 @@ namespace FirmwareGen.Streams
             internal byte[] Data;
         }
 
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern IntPtr CreateFile(string lpFileName, uint dwDesiredAccess, uint dwShareMode, IntPtr lpSecurityAttributes, uint dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFile);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool ReadFile(IntPtr hFile, byte[] lpBuffer, int nNumberOfBytesToRead, ref int lpNumberOfBytesRead, IntPtr lpOverlapped);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool WriteFile(IntPtr hFile, byte[] lpBuffer, int nNumberOfBytesToWrite, ref int lpNumberOfBytesWritten, IntPtr lpOverlapped);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern uint DeviceIoControl(SafeFileHandle hDevice, uint dwIoControlCode, IntPtr lpInBuffer, uint nInBufferSize, IntPtr lpOutBuffer, int nOutBufferSize, ref uint lpBytesReturned, IntPtr lpOverlapped);
-
-        [DllImport("kernel32.dll")]
-        private static extern bool SetFilePointerEx(SafeFileHandle hFile, long liDistanceToMove, out long lpNewFilePointer, uint dwMoveMethod);
-
         private SafeFileHandle handleValue = null;
         private long _Position = 0;
         private readonly long _length = 0;
@@ -161,7 +146,7 @@ namespace FirmwareGen.Streams
 
             (_length, _sectorsize) = GetDiskProperties(devicePath);
 
-            IntPtr ptr = CreateFile(devicePath, fileAccess, FILE_SHARE_READ | FILE_SHARE_WRITE, IntPtr.Zero, OPEN_EXISTING, FILE_ATTRIBUTE_DEVICE | FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH, IntPtr.Zero);
+            IntPtr ptr = NativeMethods.CreateFile(devicePath, fileAccess, FILE_SHARE_READ | FILE_SHARE_WRITE, IntPtr.Zero, OPEN_EXISTING, FILE_ATTRIBUTE_DEVICE | FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH, IntPtr.Zero);
             handleValue = new SafeFileHandle(ptr, true);
 
             if (handleValue.IsInvalid)
@@ -170,7 +155,7 @@ namespace FirmwareGen.Streams
             }
 
             uint lpBytesReturned = 0;
-            uint result = DeviceIoControl(handleValue, FSCTL_DISMOUNT_VOLUME, IntPtr.Zero, 0, IntPtr.Zero, 0, ref lpBytesReturned, IntPtr.Zero);
+            uint result = NativeMethods.DeviceIoControl(handleValue, FSCTL_DISMOUNT_VOLUME, IntPtr.Zero, 0, IntPtr.Zero, 0, ref lpBytesReturned, IntPtr.Zero);
 
             if (result == 0)
             {
@@ -178,7 +163,7 @@ namespace FirmwareGen.Streams
             }
 
             lpBytesReturned = 0;
-            result = DeviceIoControl(handleValue, FSCTL_LOCK_VOLUME, IntPtr.Zero, 0, IntPtr.Zero, 0, ref lpBytesReturned, IntPtr.Zero);
+            result = NativeMethods.DeviceIoControl(handleValue, FSCTL_LOCK_VOLUME, IntPtr.Zero, 0, IntPtr.Zero, 0, ref lpBytesReturned, IntPtr.Zero);
 
             if (result == 0)
             {
@@ -186,44 +171,23 @@ namespace FirmwareGen.Streams
             }
         }
 
-        public override bool CanRead
-        {
-            get { return _canRead; }
-        }
+        public override bool CanRead => _canRead;
 
-        public override bool CanSeek
-        {
-            get { return true; }
-        }
+        public override bool CanSeek => true;
 
-        public override bool CanWrite
-        {
-            get { return _canWrite; }
-        }
+        public override bool CanWrite => _canWrite;
 
         public override void Flush()
         {
             return;
         }
 
-        public override long Length
-        {
-            get
-            {
-                return _length;
-            }
-        }
+        public override long Length => _length;
 
         public override long Position
         {
-            get
-            {
-                return _Position;
-            }
-            set
-            {
-                Seek(value, SeekOrigin.Begin);
-            }
+            get => _Position;
+            set => Seek(value, SeekOrigin.Begin);
         }
 
         /// <summary>
@@ -238,7 +202,7 @@ namespace FirmwareGen.Streams
         {
             int BytesRead = 0;
             byte[] BufBytes = new byte[count];
-            if (!ReadFile(handleValue.DangerousGetHandle(), BufBytes, count, ref BytesRead, IntPtr.Zero))
+            if (!NativeMethods.ReadFile(handleValue.DangerousGetHandle(), BufBytes, count, ref BytesRead, IntPtr.Zero))
             {
                 Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
             }
@@ -267,14 +231,14 @@ namespace FirmwareGen.Streams
                 long extrastart = Position % _sectorsize;
                 if (extrastart != 0)
                 {
-                    Seek(-extrastart, SeekOrigin.Current);
+                    _ = Seek(-extrastart, SeekOrigin.Current);
                 }
 
                 long addedcount = _sectorsize - (count % _sectorsize);
                 long ncount = count + addedcount;
                 byte[] tmpbuffer = new byte[extrastart + buffer.Length + addedcount];
                 buffer.CopyTo(tmpbuffer, extrastart);
-                InternalRead(tmpbuffer, offset + (int)extrastart, (int)ncount);
+                _ = InternalRead(tmpbuffer, offset + (int)extrastart, (int)ncount);
                 tmpbuffer.ToList().Skip((int)extrastart).Take(count + offset).ToArray().CopyTo(buffer, 0);
                 return count;
             }
@@ -286,14 +250,16 @@ namespace FirmwareGen.Streams
         {
             int BytesRead = 0;
             byte[] lpBuffer = new byte[1];
-            if (!ReadFile(
+            if (!NativeMethods.ReadFile(
             handleValue.DangerousGetHandle(),                        // handle to file
             lpBuffer,                                                // data buffer
             1,                                                       // number of bytes to read
             ref BytesRead,                                           // number of bytes read
             IntPtr.Zero
             ))
-            { Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error()); }
+            {
+                Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
+            }
 
             _Position++;
 
@@ -303,16 +269,17 @@ namespace FirmwareGen.Streams
         public override void WriteByte(byte Byte)
         {
             int BytesWritten = 0;
-            byte[] lpBuffer = new byte[1];
-            lpBuffer[0] = Byte;
-            if (!WriteFile(
+            byte[] lpBuffer = [Byte];
+            if (!NativeMethods.WriteFile(
             handleValue.DangerousGetHandle(),                        // handle to file
             lpBuffer,                                                // data buffer
             1,                                                       // number of bytes to write
             ref BytesWritten,                                        // number of bytes written
             IntPtr.Zero
             ))
-            { Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error()); }
+            {
+                Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
+            }
 
             _Position++;
         }
@@ -331,7 +298,7 @@ namespace FirmwareGen.Streams
                     break;
             }
 
-            if (!SetFilePointerEx(handleValue, off, out long ret, 0))
+            if (!NativeMethods.SetFilePointerEx(handleValue, off, out long ret, 0))
             {
                 return _Position;
             }
@@ -355,7 +322,7 @@ namespace FirmwareGen.Streams
                 BufBytes[offset + i] = buffer[i];
             }
 
-            if (!WriteFile(handleValue.DangerousGetHandle(), BufBytes, count, ref BytesWritten, IntPtr.Zero))
+            if (!NativeMethods.WriteFile(handleValue.DangerousGetHandle(), BufBytes, count, ref BytesWritten, IntPtr.Zero))
             {
                 Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
             }
@@ -370,7 +337,7 @@ namespace FirmwareGen.Streams
                 try
                 {
                     uint lpBytesReturned = 0;
-                    uint result = DeviceIoControl(handleValue, FSCTL_UNLOCK_VOLUME, IntPtr.Zero, 0, IntPtr.Zero, 0, ref lpBytesReturned, IntPtr.Zero);
+                    uint result = NativeMethods.DeviceIoControl(handleValue, FSCTL_UNLOCK_VOLUME, IntPtr.Zero, 0, IntPtr.Zero, 0, ref lpBytesReturned, IntPtr.Zero);
 
                     if (result == 0)
                     {
@@ -390,13 +357,12 @@ namespace FirmwareGen.Streams
         {
             Dispose(true);
             base.Dispose();
-            GC.SuppressFinalize(this);
         }
 
-        new public void Dispose(bool disposing)
+        public new void Dispose(bool disposing)
         {
             // Check to see if Dispose has already been called.
-            if (!this.disposed)
+            if (!disposed)
             {
                 if (disposing)
                 {
@@ -405,7 +371,7 @@ namespace FirmwareGen.Streams
                         try
                         {
                             uint lpBytesReturned = 0;
-                            uint result = DeviceIoControl(handleValue, FSCTL_UNLOCK_VOLUME, IntPtr.Zero, 0, IntPtr.Zero, 0, ref lpBytesReturned, IntPtr.Zero);
+                            uint result = NativeMethods.DeviceIoControl(handleValue, FSCTL_UNLOCK_VOLUME, IntPtr.Zero, 0, IntPtr.Zero, 0, ref lpBytesReturned, IntPtr.Zero);
 
                             if (result == 0)
                             {
@@ -433,7 +399,7 @@ namespace FirmwareGen.Streams
 
         private static void Execute<T>(ref T x, uint dwIoControlCode, string lpFileName, uint dwDesiredAccess = GENERIC_READ, uint dwShareMode = FILE_SHARE_WRITE | FILE_SHARE_READ, IntPtr lpSecurityAttributes = default, uint dwCreationDisposition = OPEN_EXISTING, uint dwFlagsAndAttributes = 0, IntPtr hTemplateFile = default)
         {
-            IntPtr hDevice = CreateFile(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
+            IntPtr hDevice = NativeMethods.CreateFile(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
 
             SafeFileHandle handleValue = new(hDevice, true);
 
@@ -446,7 +412,7 @@ namespace FirmwareGen.Streams
             IntPtr lpOutBuffer = Marshal.AllocHGlobal(nOutBufferSize);
             uint lpBytesReturned = default;
 
-            uint result = DeviceIoControl(handleValue, dwIoControlCode, IntPtr.Zero, 0, lpOutBuffer, nOutBufferSize, ref lpBytesReturned, IntPtr.Zero);
+            uint result = NativeMethods.DeviceIoControl(handleValue, dwIoControlCode, IntPtr.Zero, 0, lpOutBuffer, nOutBufferSize, ref lpBytesReturned, IntPtr.Zero);
 
             if (result == 0)
             {

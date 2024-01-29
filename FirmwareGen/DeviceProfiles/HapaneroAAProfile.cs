@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System.Linq;
-
-namespace FirmwareGen.DeviceProfiles
+﻿namespace FirmwareGen.DeviceProfiles
 {
     internal class HapaneroAAProfile : IDeviceProfile
     {
@@ -32,12 +29,11 @@ namespace FirmwareGen.DeviceProfiles
 
         public string[] SupplementaryBCDCommands()
         {
-            return new string[3]
-            {
+            return [
                 "/set {default} numproc 4",
                 "/set {bootmgr} processcustomactionsfirst Yes",
                 "/set {bootmgr} customactions 0x1000048000001 0x54000001 0x1000050000001 0x54000002 0x10000000d0001 0x54000003 0x1000000050001 0x54000003"
-            };
+            ];
         }
     }
 }

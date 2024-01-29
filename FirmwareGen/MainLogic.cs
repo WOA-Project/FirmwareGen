@@ -1,21 +1,21 @@
-﻿using FirmwareGen.DeviceProfiles;
+﻿using FirmwareGen.CommandLine;
+using FirmwareGen.DeviceProfiles;
 using FirmwareGen.Streams;
 using System;
 using System.IO;
 using System.Linq;
-using static FirmwareGen.CLIOptions;
 
 namespace FirmwareGen
 {
     public static class MainLogic
     {
-        private static readonly IDeviceProfile[] deviceProfiles = new IDeviceProfile[]
-        {
+        private static readonly IDeviceProfile[] deviceProfiles =
+        [
             new CitymanProfile(),
             new TalkmanProfile(),
             new HapaneroABProfile()
             //new HapaneroAAProfile(),
-        };
+        ];
 
         public static bool VerifyAllComponentsArePresent()
         {
@@ -24,9 +24,27 @@ namespace FirmwareGen
             const string Img2Ffu = "Img2Ffu.exe";
             const string DriverUpdater = "DriverUpdater.exe";
 
-            if (!(File.Exists(wimlib) && File.Exists(Img2Ffu) && File.Exists(BlankVHD) && File.Exists(DriverUpdater)))
+            if (!File.Exists(wimlib))
             {
-                Logging.Log("Some components could not be found", Logging.LoggingLevel.Error);
+                Logging.Log($"Some components could not be found: {wimlib}", Logging.LoggingLevel.Error);
+                return false;
+            }
+
+            if (!File.Exists(Img2Ffu))
+            {
+                Logging.Log($"Some components could not be found: {Img2Ffu}", Logging.LoggingLevel.Error);
+                return false;
+            }
+
+            if (!File.Exists(BlankVHD))
+            {
+                Logging.Log($"Some components could not be found: {BlankVHD}", Logging.LoggingLevel.Error);
+                return false;
+            }
+
+            if (!File.Exists(DriverUpdater))
+            {
+                Logging.Log($"Some components could not be found: {DriverUpdater}", Logging.LoggingLevel.Error);
                 return false;
             }
 
@@ -34,7 +52,7 @@ namespace FirmwareGen
             {
                 if (!File.Exists(profile.Bootloader()))
                 {
-                    Logging.Log("Bootloader components could not be found", Logging.LoggingLevel.Error);
+                    Logging.Log($"Bootloader components could not be found: {profile.Bootloader()}", Logging.LoggingLevel.Error);
                     return false;
                 }
             }
@@ -70,24 +88,25 @@ namespace FirmwareGen
 
             if (!Directory.Exists(tmp))
             {
-                Directory.CreateDirectory(tmp);
+                _ = Directory.CreateDirectory(tmp);
             }
 
             foreach (IDeviceProfile deviceProfile in deviceProfiles)
             {
-                const string TmpVHD = tmp + @"\temp.vhdx";
+                const string TmpVHD = $@"{tmp}\temp.vhdx";
 
                 Logging.Log("Copying Main VHD");
                 VolumeUtils.CopyFile(options.Input, TmpVHD);
                 string DiskId = VolumeUtils.MountVirtualHardDisk(TmpVHD, false);
                 string TVHDLetter = VolumeUtils.GetVirtualHardDiskLetterFromDiskID(DiskId);
+
                 Logging.Log("Writing Bootloader");
                 WriteBootLoaderToDisk(DiskId, deviceProfile);
                 VolumeUtils.DismountVirtualHardDisk(TmpVHD);
                 DiskId = VolumeUtils.MountVirtualHardDisk(TmpVHD, false);
 
                 Logging.Log("Writing UEFI");
-                File.Copy(deviceProfile.UEFIELFPath(), $"{TVHDLetter}\\EFIESP\\UEFI.elf", true);
+                File.Copy(deviceProfile.UEFIELFPath(), $@"{TVHDLetter}\EFIESP\UEFI.elf", true);
 
                 if (deviceProfile.SupplementaryBCDCommands().Length > 0)
                 {
@@ -96,7 +115,7 @@ namespace FirmwareGen
                     Logging.Log("Configuring supplemental boot");
                     foreach (string command in deviceProfile.SupplementaryBCDCommands())
                     {
-                        VolumeUtils.RunProgram("bcdedit.exe", $"/store {SystemPartition}\\EFI\\Microsoft\\Boot\\BCD " + command);
+                        VolumeUtils.RunProgram("bcdedit.exe", $"{$@"/store {SystemPartition}\EFI\Microsoft\Boot\BCD "}{command}");
                     }
 
                     VolumeUtils.UnmountSystemPartition(DiskId, SystemPartition);
@@ -114,7 +133,7 @@ namespace FirmwareGen
                     version = string.Join(".", version.Split(".").Skip(2));
                 }
 
-                VolumeUtils.RunProgram(Img2Ffu, $"-i {TmpVHD} -f \"{options.Output + "\\" + deviceProfile.FFUFileName(version, "en-us", "PROFESSIONAL")}\" -p {deviceProfile.PlatformID()} -o {options.WindowsVer}");
+                VolumeUtils.RunProgram(Img2Ffu, $@"-i {TmpVHD} -f ""{$@"{options.Output}\{deviceProfile.FFUFileName(version, "en-us", "PROFESSIONAL")}"}"" -p {deviceProfile.PlatformID()} -o {options.WindowsVer}");
 
                 Logging.Log("Deleting Temp VHD");
                 File.Delete(TmpVHD);
@@ -125,7 +144,7 @@ namespace FirmwareGen
         {
             const int chunkSize = 131072;
             DeviceStream ds = new(DiskId, FileAccess.ReadWrite);
-            ds.Seek(0, SeekOrigin.Begin);
+            _ = ds.Seek(0, SeekOrigin.Begin);
             byte[] bootloader = File.ReadAllBytes(deviceProfile.Bootloader());
 
             int sectors = bootloader.Length / chunkSize;
@@ -137,7 +156,7 @@ namespace FirmwareGen
                 {
                     byte[] buff = br.ReadBytes(chunkSize);
                     ds.Write(buff, 0, chunkSize);
-                    Logging.ShowProgress((UInt64)bootloader.Length, startTime, (UInt64)((i + 1) * chunkSize), (UInt64)((i + 1) * chunkSize), false);
+                    Logging.ShowProgress((ulong)bootloader.Length, startTime, (ulong)((i + 1) * chunkSize), (ulong)((i + 1) * chunkSize), false);
                 }
             }
 
@@ -153,23 +172,26 @@ namespace FirmwareGen
 
             if (!Directory.Exists(tmp))
             {
-                Directory.CreateDirectory(tmp);
+                _ = Directory.CreateDirectory(tmp);
             }
 
             foreach (IDeviceProfile deviceProfile in deviceProfiles)
             {
-                const string TmpVHD = tmp + @"\temp.vhdx";
+                const string TmpVHD = $@"{tmp}\temp.vhdx";
                 Logging.Log("Copying Main VHD");
                 VolumeUtils.CopyFile(options.Input, TmpVHD);
                 string DiskId = VolumeUtils.MountVirtualHardDisk(TmpVHD, false);
                 _ = VolumeUtils.GetVirtualHardDiskLetterFromDiskID(DiskId);
+
                 Logging.Log("Writing Bootloader");
                 WriteBootLoaderToDisk(DiskId, deviceProfile);
                 VolumeUtils.DismountVirtualHardDisk(TmpVHD);
                 DiskId = VolumeUtils.MountVirtualHardDisk(TmpVHD, false);
+
                 Logging.Log("Making FFU");
-                VolumeUtils.RunProgram(Img2Ffu, $"-i \\\\.\\PhysicalDrive{DiskId} -f \"{options.Output + "\\" + deviceProfile.FFUFileName(options.Ver, "en-us", "PROFESSIONAL")}\" -p {deviceProfile.PlatformID()} -o {options.Ver}");
+                VolumeUtils.RunProgram(Img2Ffu, $@"-i \\.\PhysicalDrive{DiskId} -f ""{options.Output + "\\" + deviceProfile.FFUFileName(options.Ver, "en-us", "PROFESSIONAL")}"" -p {deviceProfile.PlatformID()} -o {options.Ver}");
                 VolumeUtils.DismountVirtualHardDisk(TmpVHD);
+
                 Logging.Log("Deleting Temp VHD");
                 File.Delete(TmpVHD);
             }
