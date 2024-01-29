@@ -18,10 +18,6 @@ namespace FirmwareGen
         {
             Logging.Log("Configuring boot");
             RunProgram("bcdboot.exe", $@"{VHDLetter}\Windows /s {SystemPartition} /f UEFI /l en-us");
-
-            RunProgram("bcdedit.exe", $@"/store {SystemPartition}\EFI\Microsoft\Boot\BCD /set {{default}} testsigning on");
-            RunProgram("bcdedit.exe", $@"/store {SystemPartition}\EFI\Microsoft\Boot\BCD /set {{default}} nointegritychecks on");
-            RunProgram("bcdedit.exe", $@"/store {SystemPartition}\EFI\Microsoft\Boot\BCD /dbgsettings USB TARGETNAME:WOATARGET");
         }
 
         public static void MountSystemPartition(string DiskId, string SystemPartition)
@@ -81,7 +77,7 @@ namespace FirmwareGen
         {
             Logging.Log($"Mounting {VHDPath}{(readOnly ? " as read only" : "")}...");
             string id = VHDUtils.MountVHD(VHDPath, readOnly);
-            Logging.Log(id, Logging.LoggingLevel.Warning);
+            Logging.Log($@"Mounted VHD at \\.\PhysicalDisk{id}", Logging.LoggingLevel.Warning);
             return id;
         }
 

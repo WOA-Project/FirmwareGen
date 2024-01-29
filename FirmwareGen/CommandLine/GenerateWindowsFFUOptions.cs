@@ -17,14 +17,20 @@ namespace FirmwareGen.CommandLine
             get; set;
         }
 
-        [Option('i', "input", HelpText = "Todo", Required = true)]
-        public string Input
+        [Option('v', "windows-ver", HelpText = "Todo", Required = true)]
+        public string WindowsVer
         {
             get; set;
         }
 
-        [Option('v', "windows-ver", HelpText = "Todo", Required = true)]
-        public string WindowsVer
+        [Option('w', "windows-dvd", HelpText = "Todo", Required = true)]
+        public string WindowsDVD
+        {
+            get; set;
+        }
+
+        [Option('i', "windows-index", HelpText = "Todo", Required = true)]
+        public string WindowsIndex
         {
             get; set;
         }

@@ -1,14 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net8.0-windows</TargetFramework>
 		<OutputType>Exe</OutputType>
 		<RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
 		<OutputPath>$(SolutionDir)build\$(Platform)\$(Configuration)\FirmwareGen\</OutputPath>
 		<IntermediateOutputPath>$(SolutionDir)intermediate\$(Platform)\$(Configuration)\FirmwareGen\</IntermediateOutputPath>
 		<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
 		<Platforms>AnyCPU;x64;x86;arm64</Platforms>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="CommandLineParser" Version="2.9.1" />
+		<PackageReference Include="Vanara.VirtualDisk" Version="4.0.0-beta2" />
 	</ItemGroup>
 </Project>

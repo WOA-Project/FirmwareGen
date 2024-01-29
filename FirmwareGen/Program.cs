@@ -1,5 +1,5 @@
-﻿using FirmwareGen.CommandLine;
-using System;
+﻿using System;
+using FirmwareGen.CommandLine;
 
 namespace FirmwareGen
 {
@@ -8,7 +8,7 @@ namespace FirmwareGen
         private static void Main(string[] args)
         {
             Logging.Log("FirmwareGen");
-            Logging.Log("Copyright (c) 2019-2021, Gustave Monce - gus33000.me - @gus33000");
+            Logging.Log("Copyright (c) 2019-2024, Gustave Monce - gus33000.me - @gus33000");
             Logging.Log("Released under the MIT license at github.com/gus33000/FirmwareGen");
             Logging.Log("");
 

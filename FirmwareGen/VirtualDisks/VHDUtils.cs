@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Text.RegularExpressions;
+using Vanara.IO;
 
 namespace FirmwareGen.VirtualDisks
 {
@@ -103,6 +104,17 @@ namespace FirmwareGen.VirtualDisks
             _ = NativeMethods.CloseHandle(handle);
         }
 
+        public static void CreateVHDX(string vhdfile, uint SectorSize, ulong DiskSize)
+        {
+            using VirtualDisk virtualDisk = VirtualDisk.Create(vhdfile, DiskSize, true, 0, SectorSize);
+        }
+
+        /// <summary>
+        /// \d+
+        /// \d matches a digit (equivalent to [0-9])
+        /// + matches the previous token between one and unlimited times, as many times as possible, giving back as needed (greedy)
+        /// </summary>
+        /// <returns></returns>
         [GeneratedRegex(@"\d+")]
         private static partial Regex VHDRegex();
     }

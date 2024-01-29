@@ -11,10 +11,7 @@ namespace FirmwareGen.CommandLine
                 return;
             }
 
-            _ = Parser.Default.ParseArguments<GenerateWindowsOptions, GenerateWindowsFFUOptions, GenerateOtherFFUOptions>(args)
-                .WithParsed<GenerateWindowsOptions>(MainLogic.GenerateWindowsBaseVHDX)
-                .WithParsed<GenerateWindowsFFUOptions>(MainLogic.GenerateWindowsFFU)
-                .WithParsed<GenerateOtherFFUOptions>(MainLogic.GenerateOtherFFU);
+            _ = Parser.Default.ParseArguments<GenerateWindowsFFUOptions>(args).WithParsed(MainLogic.GenerateWindowsFFU);
         }
     }
 }
