@@ -1,12 +1,10 @@
-﻿using System.Drawing;
-
-namespace PartitionOffsetsHelperTool.GPT
+﻿namespace PartitionOffsetsHelperTool.GPT
 {
     internal class GPTUtils
     {
         internal static void MakeGPT(ulong DiskSize, ulong SectorSize, GPTPartition[] DefaultPartitionTable, ulong AndroidDesiredSpace = 4_294_967_296)
         {
-            ulong LastLBA = DiskSize / SectorSize - 1;
+            ulong LastLBA = (DiskSize / SectorSize) - 1;
 
             ulong PartitionArrayLBACount = 4;
             ulong TotalGPTLBACount = 1 /* GPT Header */ + PartitionArrayLBACount /* Partition Table */;
@@ -40,7 +38,7 @@ namespace PartitionOffsetsHelperTool.GPT
             ulong ESPLBACount = 65525 + 1024 + 1 /* Cluster Size Limit for FAT32 */;
             if (ESPLBACount % BlockSize != 0)
             {
-                ESPLBACount += BlockSize - ESPLBACount % BlockSize;
+                ESPLBACount += BlockSize - (ESPLBACount % BlockSize);
             }
 
             /* Strategy to reserve 4GB for Android Only */
@@ -67,25 +65,25 @@ namespace PartitionOffsetsHelperTool.GPT
 
             if (ESPFirstLBA % BlockSize != 0)
             {
-                ulong Padding = BlockSize - ESPFirstLBA % BlockSize;
+                ulong Padding = BlockSize - (ESPFirstLBA % BlockSize);
                 throw new Exception("ESPFirstLBA overflew block alignment by: " + Padding);
             }
 
             if ((ESPLastLBA + 1) % BlockSize != 0)
             {
-                ulong Padding = BlockSize - (ESPLastLBA + 1) % BlockSize;
+                ulong Padding = BlockSize - ((ESPLastLBA + 1) % BlockSize);
                 throw new Exception("ESPLastLBA + 1 overflew block alignment by: " + Padding);
             }
 
             if (WindowsFirstLBA % BlockSize != 0)
             {
-                ulong Padding = BlockSize - WindowsFirstLBA % BlockSize;
+                ulong Padding = BlockSize - (WindowsFirstLBA % BlockSize);
                 throw new Exception("WindowsFirstLBA overflew block alignment by: " + Padding);
             }
 
             if ((WindowsLastLBA + 1) % BlockSize != 0)
             {
-                ulong Padding = BlockSize - (WindowsLastLBA + 1) % BlockSize;
+                ulong Padding = BlockSize - ((WindowsLastLBA + 1) % BlockSize);
                 throw new Exception("WindowsLastLBA + 1 overflew block alignment by: " + Padding);
             }
 
@@ -118,16 +116,21 @@ namespace PartitionOffsetsHelperTool.GPT
 
             Console.WriteLine("Resulting Allocation after Computation, Compatibility Checks and Corrections:");
             Console.WriteLine();
-            Console.WriteLine("Android: " + Math.Round(androidSpaceInBytes / (double)(1024 * 1024 * 1024), 2) + "GB");
-            Console.WriteLine("Windows: " + Math.Round(windowsSpaceInBytes / (double)(1024 * 1024 * 1024), 2) + "GB");
+            Console.WriteLine($"Android: {Math.Round(androidSpaceInBytes / (double)(1024 * 1024 * 1024), 2)}GB ({Math.Round(androidSpaceInBytes / (double)(1000 * 1000 * 1000), 2)}GiB)");
+            Console.WriteLine($"Windows: {Math.Round(windowsSpaceInBytes / (double)(1024 * 1024 * 1024), 2)}GB ({Math.Round(windowsSpaceInBytes / (double)(1000 * 1000 * 1000), 2)}GiB)");
             Console.WriteLine();
 
             Console.WriteLine("Resulting parted commands:");
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine();
             Console.WriteLine($"mkpart {Partitions[^3].Name} ext4 {Partitions[^3].FirstLBA}s {Partitions[^3].LastLBA}s");
+            Console.WriteLine();
             Console.WriteLine($"mkpart {Partitions[^2].Name} fat32 {Partitions[^2].FirstLBA}s {Partitions[^2].LastLBA}s");
+            Console.WriteLine();
+            //Console.WriteLine($"mkpart {Partitions[^1].Name} ntfs {Partitions[^1].FirstLBA}s {Math.Truncate(Partitions[^1].LastLBA * SectorSize / (double)(1000 * 1000 * 1000))}GB");
             Console.WriteLine($"mkpart {Partitions[^1].Name} ntfs {Partitions[^1].FirstLBA}s {Partitions[^1].LastLBA}s");
+            Console.WriteLine();
             Console.ForegroundColor = ogColor;
         }
     }

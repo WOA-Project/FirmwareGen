@@ -10,7 +10,7 @@ namespace FirmwareGen.GPT
         internal static byte[] MakeGPT(ulong DiskSize, ulong SectorSize, GPTPartition[] DefaultPartitionTable, bool IsBackupGPT = false, bool SplitInHalf = true)
         {
             ulong FirstLBA = 1;
-            ulong LastLBA = DiskSize / SectorSize - 1;
+            ulong LastLBA = (DiskSize / SectorSize) - 1;
 
             ulong PartitionArrayLBACount = 4;
             ulong TotalGPTLBACount = 1 /* GPT Header */ + PartitionArrayLBACount /* Partition Table */;
@@ -41,7 +41,7 @@ namespace FirmwareGen.GPT
             ulong ESPLBACount = 65525 + 1024 + 1 /* Cluster Size Limit for FAT32 */;
             if (ESPLBACount % BlockSize != 0)
             {
-                ESPLBACount += BlockSize - ESPLBACount % BlockSize;
+                ESPLBACount += BlockSize - (ESPLBACount % BlockSize);
             }
 
             ulong WindowsLBACount;
@@ -90,25 +90,25 @@ namespace FirmwareGen.GPT
 
             if (ESPFirstLBA % BlockSize != 0)
             {
-                ulong Padding = BlockSize - ESPFirstLBA % BlockSize;
+                ulong Padding = BlockSize - (ESPFirstLBA % BlockSize);
                 throw new Exception("ESPFirstLBA overflew block alignment by: " + Padding);
             }
 
             if ((ESPLastLBA + 1) % BlockSize != 0)
             {
-                ulong Padding = BlockSize - (ESPLastLBA + 1) % BlockSize;
+                ulong Padding = BlockSize - ((ESPLastLBA + 1) % BlockSize);
                 throw new Exception("ESPLastLBA + 1 overflew block alignment by:: " + Padding);
             }
 
             if (WindowsFirstLBA % BlockSize != 0)
             {
-                ulong Padding = BlockSize - WindowsFirstLBA % BlockSize;
+                ulong Padding = BlockSize - (WindowsFirstLBA % BlockSize);
                 throw new Exception("WindowsFirstLBA overflew block alignment by:: " + Padding);
             }
 
             if ((WindowsLastLBA + 1) % BlockSize != 0)
             {
-                ulong Padding = BlockSize - (WindowsLastLBA + 1) % BlockSize;
+                ulong Padding = BlockSize - ((WindowsLastLBA + 1) % BlockSize);
                 throw new Exception("WindowsLastLBA + 1 overflew block alignment by:: " + Padding);
             }
 
@@ -192,9 +192,9 @@ namespace FirmwareGen.GPT
                 PartitionTableBuffer.AddRange(BitConverter.GetBytes(Partitions[i].LastLBA));
                 PartitionTableBuffer.AddRange(BitConverter.GetBytes(Partitions[i].Attributes));
                 PartitionTableBuffer.AddRange(Encoding.Unicode.GetBytes(Partitions[i].Name));
-                PartitionTableBuffer.AddRange(new byte[Header.PartitionEntrySize * (ulong)(long)(i + 1) - (ulong)(long)PartitionTableBuffer.Count]);
+                PartitionTableBuffer.AddRange(new byte[(Header.PartitionEntrySize * (ulong)(long)(i + 1)) - (ulong)(long)PartitionTableBuffer.Count]);
             }
-            PartitionTableBuffer.AddRange(new byte[Header.PartitionEntrySize * Header.PartitionEntryCount - (ulong)(long)PartitionTableBuffer.Count]);
+            PartitionTableBuffer.AddRange(new byte[(Header.PartitionEntrySize * Header.PartitionEntryCount) - (ulong)(long)PartitionTableBuffer.Count]);
 
             uint PartitionTableCRC32 = CRC32.Compute([.. PartitionTableBuffer], 0, (uint)PartitionTableBuffer.Count);
             Header.PartitionArrayCRC32 = PartitionTableCRC32;
@@ -226,7 +226,7 @@ namespace FirmwareGen.GPT
             HeaderBuffer[19] = bytes[3];
 
             byte[] HeaderPaddingBuffer = new byte[(int)(SectorSize - (uint)HeaderBuffer.Length)];
-            byte[] PartitionTablePaddingBuffer = new byte[(int)(PartitionArrayLBACount * SectorSize - (uint)PartitionTableBuffer.Count)];
+            byte[] PartitionTablePaddingBuffer = new byte[(int)((PartitionArrayLBACount * SectorSize) - (uint)PartitionTableBuffer.Count)];
 
             List<byte> GPTBuffer = [];
             if (IsBackupGPT)

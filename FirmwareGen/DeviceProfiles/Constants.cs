@@ -1,5 +1,5 @@
-﻿using System;
-using FirmwareGen.GPT;
+﻿using FirmwareGen.GPT;
+using System;
 
 namespace FirmwareGen.DeviceProfiles
 {

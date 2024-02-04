@@ -4,7 +4,7 @@ namespace PartitionOffsetsHelperTool
 {
     internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Console.WriteLine("Partition Offsets Helper Tool");
             Console.WriteLine("Copyright (c) 2019-2024, Gustave Monce - gus33000.me - @gus33000");
@@ -30,8 +30,8 @@ namespace PartitionOffsetsHelperTool
             {
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.Write("Is your Surface Duo a 128GB model? [Y/N]: ");
-                ConsoleKeyInfo key = Console.ReadKey();
                 Console.ForegroundColor = ogColor;
+                ConsoleKeyInfo key = Console.ReadKey();
                 Console.WriteLine();
                 Console.WriteLine();
                 if (key.Key == ConsoleKey.Y)
@@ -94,20 +94,23 @@ namespace PartitionOffsetsHelperTool
                 if (requestedAndroidTotalCapacity < 4)
                 {
                     Console.WriteLine("Invalid input, please try again.");
+                    Console.WriteLine("The Minimum value should be: 4GB");
                     Console.WriteLine();
                     continue;
                 }
 
-                if (Is128GBModel && requestedAndroidTotalCapacity > 128 - 64)
+                if (Is128GBModel && requestedAndroidTotalCapacity > 128 - 64 - 24)
                 {
                     Console.WriteLine("Invalid input, please try again.");
+                    Console.WriteLine("The Maximum value should be: " + (128 - 64 - 24) + "GB");
                     Console.WriteLine();
                     continue;
                 }
 
-                if (!Is128GBModel && requestedAndroidTotalCapacity > 256 - 64)
+                if (!Is128GBModel && requestedAndroidTotalCapacity > 256 - 64 - 34)
                 {
                     Console.WriteLine("Invalid input, please try again.");
+                    Console.WriteLine("The Maximum value should be: " + (256 - 64 - 34) + "GB");
                     Console.WriteLine();
                     continue;
                 }
@@ -115,19 +118,27 @@ namespace PartitionOffsetsHelperTool
                 break;
             }
 
+            ulong requestedAndroidTotalCapacityInBytes = requestedAndroidTotalCapacity * 1024 * 1024 * 1024;
+            ulong deviceCapacityInBytes = Is128GBModel ? 111_723_675_648ul : 239_651_758_080ul;
+            ulong supposedWindowsCapacityInBytes = deviceCapacityInBytes - requestedAndroidTotalCapacityInBytes;
+
             Console.WriteLine("User Choice:");
             Console.WriteLine();
-            Console.WriteLine("Android: " + requestedAndroidTotalCapacity + "GB");
-            Console.WriteLine("Windows: " + (((Is128GBModel ? 111_723_675_648ul : 239_651_758_080ul) - (requestedAndroidTotalCapacity * 1024 * 1024 * 1024)) / (1024 * 1024 * 1024)) + "GB");
+            Console.WriteLine($"Android: {requestedAndroidTotalCapacity}GB ({Math.Round((double)requestedAndroidTotalCapacityInBytes / (1000 * 1000 * 1000), 2)}GiB)");
+            Console.WriteLine($"Windows: {Math.Round((double)supposedWindowsCapacityInBytes / (1024 * 1024 * 1024), 2)}GB ({Math.Round((double)supposedWindowsCapacityInBytes / (1000 * 1000 * 1000), 2)}GiB)");
             Console.WriteLine();
 
             Console.WriteLine("Calculating offsets...");
             Console.WriteLine();
 
-            GPTUtils.MakeGPT(Is128GBModel ? 111_723_675_648ul : 239_651_758_080ul, 4096, DeviceProfiles.Constants.OEMEP_UFS_LUN_0_PARTITIONS, requestedAndroidTotalCapacity * 1024 * 1024 * 1024);
+            GPTUtils.MakeGPT(deviceCapacityInBytes, 4096, DeviceProfiles.Constants.OEMEP_UFS_LUN_0_PARTITIONS, requestedAndroidTotalCapacityInBytes);
 
             Console.WriteLine("");
-            Console.WriteLine("Done! You can now use the commands provided above according to instructions provided in the guide to achieve the desired storage allocation.");
+            Console.WriteLine("Done! You can now use the commands provided above according to the");
+            Console.WriteLine("instructions provided in the guide to achieve the desired storage allocation.");
+            Console.WriteLine("");
+            Console.Write("Press any key to exit . . . ");
+            _ = Console.ReadKey();
         }
     }
 }

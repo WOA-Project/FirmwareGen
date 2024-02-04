@@ -27,7 +27,7 @@
             get; set;
         }
 
-        public string Name
+        public required string Name
         {
             get; set;
         }

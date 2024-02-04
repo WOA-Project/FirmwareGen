@@ -1,5 +1,5 @@
-﻿using System;
-using FirmwareGen.CommandLine;
+﻿using FirmwareGen.CommandLine;
+using System;
 
 namespace FirmwareGen
 {
