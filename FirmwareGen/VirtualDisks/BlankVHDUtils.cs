@@ -1,5 +1,4 @@
-﻿using FirmwareGen.GPT;
-using FirmwareGen.Streams;
+﻿using FirmwareGen.Streams;
 using System;
 using System.IO;
 

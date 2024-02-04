@@ -1,6 +1,5 @@
 ﻿using FirmwareGen.CommandLine;
 using FirmwareGen.DeviceProfiles;
-using FirmwareGen.VirtualDisks;
 using System.IO;
 using System.Linq;
 
