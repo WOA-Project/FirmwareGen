@@ -345,11 +345,11 @@ namespace PartitionOffsetsHelperTool
             ulong deviceCapacityInBytes = 0;
             if (StorageModel == 128)
             {
-                deviceCapacityInBytes = 110_394_048_512ul;
+                deviceCapacityInBytes = 110_394_081_280ul;
             }
             else if (StorageModel == 256)
             {
-                deviceCapacityInBytes = 238_237_523_968ul;
+                deviceCapacityInBytes = 238_353_907_712ul;
             }
             else if (StorageModel == 512)
             {

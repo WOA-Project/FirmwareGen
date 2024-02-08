@@ -8,7 +8,7 @@ namespace FirmwareGen.DeviceProfiles
     {
         public byte[] GetPrimaryGPT()
         {
-            ulong DiskSize = 238_237_523_968; // 256GB;
+            ulong DiskSize = 238_353_907_712; // 256GB;
             ulong SectorSize = 4096;
 
             byte[] PrimaryMBR = new byte[SectorSize];
@@ -33,7 +33,7 @@ namespace FirmwareGen.DeviceProfiles
 
         public byte[] GetBackupGPT()
         {
-            ulong DiskSize = 238_237_523_968; // 256GB;
+            ulong DiskSize = 238_353_907_712; // 256GB;
             ulong SectorSize = 4096;
 
             return GPTUtils.MakeGPT(DiskSize, SectorSize, Constants.OEMZE_UFS_LUN_0_PARTITIONS, IsBackupGPT: true);
@@ -41,7 +41,7 @@ namespace FirmwareGen.DeviceProfiles
 
         public string GetBlankVHD()
         {
-            ulong DiskSize = 238_237_523_968; // 256GB;
+            ulong DiskSize = 238_353_907_712; // 256GB;
             uint SectorSize = 4096;
 
             const string tmp = "tmp";
