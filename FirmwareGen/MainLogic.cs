@@ -11,7 +11,10 @@ namespace FirmwareGen
         [
             new EpsilonHalfSplit128GB(),
             new EpsilonHalfSplit256GB(),
-            new EpsilonMaximizedForWindows()
+            new EpsilonMaximizedForWindows(),
+            new ZetaHalfSplit128GB(),
+            new ZetaHalfSplit256GB(),
+            new ZetaMaximizedForWindows()
         ];
 
         public static bool VerifyAllComponentsArePresent()

@@ -84,7 +84,9 @@ namespace FirmwareGen.DeviceProfiles
 
         public string PlatformID()
         {
-            return "Microsoft Corporation.Surface.Surface Duo.1930";
+            return "Microsoft Corporation.Surface.Surface Duo.1930;" +
+                "OEMB1.*.OEMB1 Product.*;" +
+                "OEMEP.*.OEMEP Product.*";
         }
 
         public string FFUFileName(string OSVersion, string Language, string Sku)
