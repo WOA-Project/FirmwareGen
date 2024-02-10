@@ -1,4 +1,5 @@
 ﻿using PartitionOffsetsHelperTool.GPT;
+using System;
 
 namespace PartitionOffsetsHelperTool.DeviceProfiles
 {

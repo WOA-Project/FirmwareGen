@@ -1,4 +1,8 @@
-﻿namespace PartitionOffsetsHelperTool.GPT
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace PartitionOffsetsHelperTool.GPT
 {
     internal class GPTUtils
     {

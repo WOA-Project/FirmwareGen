@@ -1,4 +1,6 @@
-﻿namespace PartitionOffsetsHelperTool.GPT
+﻿using System;
+
+namespace PartitionOffsetsHelperTool.GPT
 {
     public class GPTPartition
     {

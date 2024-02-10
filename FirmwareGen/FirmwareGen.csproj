@@ -6,7 +6,7 @@
 		<OutputPath>$(SolutionDir)build\$(Platform)\$(Configuration)\FirmwareGen\</OutputPath>
 		<IntermediateOutputPath>$(SolutionDir)intermediate\$(Platform)\$(Configuration)\FirmwareGen\</IntermediateOutputPath>
 		<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-		<Platforms>AnyCPU;x64;x86;arm64</Platforms>
+		<Platforms>AnyCPU;x64;x86;ARM64</Platforms>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 	<ItemGroup>
