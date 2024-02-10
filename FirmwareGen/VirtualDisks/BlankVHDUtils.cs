@@ -1,4 +1,4 @@
-﻿using FirmwareGen.Streams;
+﻿using DiscUtils.Vhdx;
 using System;
 using System.IO;
 
@@ -6,10 +6,14 @@ namespace FirmwareGen.VirtualDisks
 {
     internal class BlankVHDUtils
     {
-        private static void WriteGPTToDisk(string DiskId, byte[] PrimaryGPT, byte[] BackupGPT)
+        private static void WriteGPTToDisk(string TmpVHD, byte[] PrimaryGPT, byte[] BackupGPT)
         {
             const int chunkSize = 4096;
-            DeviceStream ds = new(DiskId, FileAccess.ReadWrite);
+
+            DiscUtils.Setup.SetupHelper.RegisterAssembly(typeof(Disk).Assembly);
+            using DiscUtils.VirtualDisk outDisk = DiscUtils.VirtualDisk.OpenDisk(TmpVHD, FileAccess.ReadWrite);
+
+            DiscUtils.Streams.SparseStream ds = outDisk.Content;
 
             // Primary GPT
             Logging.Log("Writing Primary GPT");
@@ -50,17 +54,11 @@ namespace FirmwareGen.VirtualDisks
         {
             const string SystemPartition = "Y:";
 
+            Logging.Log("Writing GPT");
+            WriteGPTToDisk(TmpVHD, PrimaryGPT, BackupGPT);
+
             Logging.Log("Mounting Main VHD");
             string DiskId = VolumeUtils.MountVirtualHardDisk(TmpVHD, false);
-
-            Logging.Log("Writing GPT");
-            WriteGPTToDisk(DiskId, PrimaryGPT, BackupGPT);
-
-            Logging.Log("Dismounting Main VHD");
-            VolumeUtils.DismountVirtualHardDisk(TmpVHD);
-
-            Logging.Log("Mounting Main VHD");
-            DiskId = VolumeUtils.MountVirtualHardDisk(TmpVHD, false);
 
             Logging.Log("Getting Windows Partition Drive Letter");
             string VHDLetter = VolumeUtils.GetVirtualHardDiskLetterFromDiskID(DiskId);
