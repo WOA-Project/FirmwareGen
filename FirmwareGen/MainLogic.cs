@@ -10,16 +10,16 @@ namespace FirmwareGen
         private static readonly IDeviceProfile[] deviceProfiles =
         [
             new EpsilonHalfSplit128GB(),
-            new EpsilonHalfSplit256GB(),
-            new EpsilonMaximizedForWindows(),
-            new ZetaHalfSplit128GB(),
-            new ZetaHalfSplit256GB(),
-            new ZetaMaximizedForWindows()
+            //new EpsilonHalfSplit256GB(),
+            //new EpsilonMaximizedForWindows(),
+            //new ZetaHalfSplit128GB(),
+            //new ZetaHalfSplit256GB(),
+            //new ZetaMaximizedForWindows()
         ];
 
         public static bool VerifyAllComponentsArePresent()
         {
-            const string wimlib = "wimlib-imagex.exe";
+            /*const string wimlib = "wimlib-imagex.exe";
             const string Img2Ffu = "Img2Ffu.exe";
             const string DriverUpdater = "DriverUpdater.exe";
 
@@ -41,20 +41,21 @@ namespace FirmwareGen
                 return false;
             }
 
+            return true;*/
             return true;
         }
 
         public static void GenerateWindowsFFU(GenerateWindowsFFUOptions options)
         {
-            const string wimlib = "wimlib-imagex.exe";
+            /*const string wimlib = "wimlib-imagex.exe";
             const string Img2Ffu = "Img2Ffu.exe";
             const string DriverUpdater = "DriverUpdater.exe";
-            const string SystemPartition = "Y:";
+            const string SystemPartition = "Y:";*/
 
             foreach (IDeviceProfile deviceProfile in deviceProfiles)
             {
                 string TmpVHD = deviceProfile.GetBlankVHD();
-                string DiskId = VolumeUtils.MountVirtualHardDisk(TmpVHD, false);
+                /*string DiskId = VolumeUtils.MountVirtualHardDisk(TmpVHD, false);
                 string VHDLetter = VolumeUtils.GetVirtualHardDiskLetterFromDiskID(DiskId);
 
                 VolumeUtils.ApplyWindowsImageFromDVD(wimlib, options.WindowsDVD, options.WindowsIndex, VHDLetter);
@@ -92,7 +93,7 @@ namespace FirmwareGen
                 VolumeUtils.RunProgram(Img2Ffu, $@"-i {TmpVHD} -f ""{options.Output}\{deviceProfile.FFUFileName(version, "en-us", "PROFESSIONAL")}"" -c 16384 -s 4096 -p ""{deviceProfile.PlatformID()}"" -o {options.WindowsVer} -b 4000");
 
                 Logging.Log("Deleting Temp VHD");
-                File.Delete(TmpVHD);
+                File.Delete(TmpVHD);*/
             }
         }
     }

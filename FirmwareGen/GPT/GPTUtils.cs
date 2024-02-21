@@ -124,7 +124,7 @@ namespace FirmwareGen.GPT
 
             Partitions.Add(new()
             {
-                TypeGUID = new Guid("ebd0a0a2-b9e5-4433-87c0-68b6b72699c7"),
+                TypeGUID = new Guid("E75CAF8F-F680-4CEE-AFA3-B001E56EFC2D"),
                 UID = new Guid("92dee62d-ed67-4ec3-9daa-c9a4bce2c355"),
                 FirstLBA = WindowsFirstLBA,
                 LastLBA = WindowsLastLBA,
