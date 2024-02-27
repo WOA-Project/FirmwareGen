@@ -208,17 +208,9 @@ namespace FirmwareGen.GPT
             {
                 throw new Exception("Unsupported Configuration, too many partitions than supported, please file an issue.");
             }
-            else if ((uint)Partitions.Length > 64)
-            {
-                PartitionEntryCount = 128;
-            }
-            else if ((uint)Partitions.Length > 32)
-            {
-                PartitionEntryCount = 64;
-            }
             else
             {
-                PartitionEntryCount = 32;
+                PartitionEntryCount = (uint)Partitions.Length > 64 ? 128 : (uint)Partitions.Length > 32 ? 64 : (uint)32;
             }
 
             GPTHeader Header = new()

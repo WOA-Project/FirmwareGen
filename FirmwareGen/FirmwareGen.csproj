@@ -10,6 +10,42 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 	<ItemGroup>
+	  <None Remove="DeviceProfiles\EpsilonHalfSplit128GB.xml" />
+	  <None Remove="DeviceProfiles\EpsilonHalfSplit256GB.xml" />
+	  <None Remove="DeviceProfiles\EpsilonMaximizedForWindows.xml" />
+	  <None Remove="DeviceProfiles\MTP8150MaximizedForWindows.xml" />
+	  <None Remove="DeviceProfiles\ZetaHalfSplit128GB.xml" />
+	  <None Remove="DeviceProfiles\ZetaHalfSplit256GB.xml" />
+	  <None Remove="DeviceProfiles\ZetaHalfSplit512GB.xml" />
+	  <None Remove="DeviceProfiles\ZetaMaximizedForWindows.xml" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Include="DeviceProfiles\EpsilonHalfSplit128GB.xml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="DeviceProfiles\EpsilonHalfSplit256GB.xml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="DeviceProfiles\EpsilonMaximizedForWindows.xml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="DeviceProfiles\MTP8150MaximizedForWindows.xml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="DeviceProfiles\ZetaHalfSplit128GB.xml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="DeviceProfiles\ZetaHalfSplit256GB.xml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="DeviceProfiles\ZetaHalfSplit512GB.xml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="DeviceProfiles\ZetaMaximizedForWindows.xml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+	<ItemGroup>
 		<PackageReference Include="CommandLineParser" Version="2.9.1" />
 		<PackageReference Include="LTRData.DiscUtils.Vhdx" Version="1.0.38" />
 	</ItemGroup>

@@ -34,5 +34,11 @@ namespace FirmwareGen.CommandLine
         {
             get; set;
         }
+
+        [Option('p', "device-profile", HelpText = "Path to the device profile xml containing information on how to build the FFU", Required = true)]
+        public string DeviceProfile
+        {
+            get; set;
+        }
     }
 }

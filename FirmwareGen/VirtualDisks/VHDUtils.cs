@@ -1,9 +1,9 @@
-﻿using System;
+﻿using DiscUtils.Streams;
+using DiscUtils.Vhdx;
+using System;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using DiscUtils.Streams;
-using DiscUtils.Vhdx;
 
 namespace FirmwareGen.VirtualDisks
 {
