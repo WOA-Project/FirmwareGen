@@ -53,7 +53,7 @@ namespace FirmwareGen
 
             foreach (IDeviceProfile deviceProfile in deviceProfiles)
             {
-                string TmpVHD = deviceProfile.GetBlankVHD();
+                string TmpVHD = CommonLogic.GetBlankVHD(deviceProfile);
                 string DiskId = VolumeUtils.MountVirtualHardDisk(TmpVHD, false);
                 string VHDLetter = VolumeUtils.GetVirtualHardDiskLetterFromDiskID(DiskId);
 
@@ -64,12 +64,12 @@ namespace FirmwareGen
                 VolumeUtils.ConfigureBootManager(VHDLetter, SystemPartition);
                 VolumeUtils.UnmountSystemPartition(DiskId, SystemPartition);
 
-                if (deviceProfile.SupplementaryBCDCommands().Length > 0)
+                if (deviceProfile.GetSupplementaryBCDCommands().Length > 0)
                 {
                     VolumeUtils.MountSystemPartition(DiskId, SystemPartition);
 
                     Logging.Log("Configuring supplemental boot");
-                    foreach (string command in deviceProfile.SupplementaryBCDCommands())
+                    foreach (string command in deviceProfile.GetSupplementaryBCDCommands())
                     {
                         VolumeUtils.RunProgram("bcdedit.exe", $"{$@"/store {SystemPartition}\EFI\Microsoft\Boot\BCD "}{command}");
                     }
@@ -78,7 +78,7 @@ namespace FirmwareGen
                 }
 
                 Logging.Log("Adding drivers");
-                VolumeUtils.RunProgram(DriverUpdater, $@"-d ""{deviceProfile.DriverCommand(options.DriverPack)}"" -r ""{options.DriverPack}"" -p ""{VHDLetter}""");
+                VolumeUtils.RunProgram(DriverUpdater, $@"-d ""{deviceProfile.GetDriverDefinitionPath(options.DriverPack)}"" -r ""{options.DriverPack}"" -p ""{VHDLetter}""");
 
                 VolumeUtils.DismountVirtualHardDisk(TmpVHD);
 
@@ -89,7 +89,7 @@ namespace FirmwareGen
                     version = string.Join(".", version.Split(".").Skip(2));
                 }
 
-                VolumeUtils.RunProgram(Img2Ffu, $@"-i {TmpVHD} -f ""{options.Output}\{deviceProfile.FFUFileName(version, "en-us", "PROFESSIONAL")}"" -c 16384 -s 4096 -p ""{deviceProfile.PlatformID()}"" -o {options.WindowsVer} -b 4000");
+                VolumeUtils.RunProgram(Img2Ffu, $@"-i {TmpVHD} -f ""{options.Output}\{deviceProfile.GetFFUFileName(version, "en-us", "PROFESSIONAL")}"" -c 16384 -s 4096 -p ""{deviceProfile.GetPlatformIDs()}"" -o {options.WindowsVer} -b 4000");
 
                 Logging.Log("Deleting Temp VHD");
                 File.Delete(TmpVHD);

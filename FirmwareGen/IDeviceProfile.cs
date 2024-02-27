@@ -1,11 +1,16 @@
-﻿namespace FirmwareGen
+﻿using FirmwareGen.GPT;
+
+namespace FirmwareGen
 {
     public interface IDeviceProfile
     {
-        string GetBlankVHD();
-        string[] SupplementaryBCDCommands();
-        string PlatformID();
-        string FFUFileName(string OSVersion, string Language, string Sku);
-        string DriverCommand(string DriverFolder);
+        string[] GetSupplementaryBCDCommands();
+        string[] GetPlatformIDs();
+        string GetFFUFileName(string OSVersion, string Language, string Sku);
+        string GetDriverDefinitionPath(string DriverFolder);
+        ulong GetDiskTotalSize();
+        uint GetDiskSectorSize();
+        GPTPartition[] GetPartitionLayout();
+        SplittingStrategy GetSplittingStrategy();
     }
 }

@@ -1,102 +1,107 @@
 ﻿using FirmwareGen.GPT;
-using FirmwareGen.VirtualDisks;
-using System.IO;
+using System;
 
 namespace FirmwareGen.DeviceProfiles
 {
     public class EpsilonHalfSplit128GB : IDeviceProfile
     {
-        public byte[] GetPrimaryGPT()
-        {
-            //ulong DiskSize = 239_683_502_080; // 256GB (Bigger variant);
-            //ulong DiskSize = 239_651_758_080; // 256GB (Smaller variant);
-            ulong DiskSize = 111_723_675_648; // 128GB;
-            ulong SectorSize = 4096;
-
-            byte[] PrimaryMBR = new byte[SectorSize];
-            PrimaryMBR[0x1C0] = 0x01;
-            PrimaryMBR[0x1C2] = 0xEE;
-            PrimaryMBR[0x1C3] = 0xFF;
-            PrimaryMBR[0x1C4] = 0xFF;
-            PrimaryMBR[0x1C5] = 0xFF;
-            PrimaryMBR[0x1C6] = 0x01;
-            PrimaryMBR[0x1CA] = 0xFF;
-            PrimaryMBR[0x1CB] = 0xFF;
-            PrimaryMBR[0x1CC] = 0xFF;
-            PrimaryMBR[0x1CD] = 0xFF;
-            PrimaryMBR[0x1FE] = 0x55;
-            PrimaryMBR[0x1FF] = 0xAA;
-
-            return [
-                .. PrimaryMBR,
-                .. GPTUtils.MakeGPT(DiskSize, SectorSize, Constants.OEMEP_UFS_LUN_0_PARTITIONS, IsBackupGPT: false)
-            ];
-        }
-
-        public byte[] GetBackupGPT()
-        {
-            //ulong DiskSize = 239_683_502_080; // 256GB (Bigger variant);
-            //ulong DiskSize = 239_651_758_080; // 256GB (Smaller variant);
-            ulong DiskSize = 111_723_675_648; // 128GB;
-            ulong SectorSize = 4096;
-
-            return GPTUtils.MakeGPT(DiskSize, SectorSize, Constants.OEMEP_UFS_LUN_0_PARTITIONS, IsBackupGPT: true);
-        }
-
-        public string GetBlankVHD()
-        {
-            //ulong DiskSize = 239_683_502_080; // 256GB (Bigger variant);
-            //ulong DiskSize = 239_651_758_080; // 256GB (Smaller variant);
-            ulong DiskSize = 111_723_675_648; // 128GB;
-            uint SectorSize = 4096;
-
-            const string tmp = "tmp";
-            const string TmpVHD = $@"{tmp}\temp.vhdx";
-
-            if (!Directory.Exists(tmp))
-            {
-                _ = Directory.CreateDirectory(tmp);
-            }
-
-            if (File.Exists(TmpVHD))
-            {
-                File.Delete(TmpVHD);
-            }
-
-            Logging.Log("Generating Primary GPT");
-            byte[] PrimaryGPT = GetPrimaryGPT();
-
-            Logging.Log("Generating Backup GPT");
-            byte[] BackupGPT = GetBackupGPT();
-
-            Logging.Log("Generating Main VHD");
-            VHDUtils.CreateVHDX(TmpVHD, SectorSize, DiskSize);
-
-            BlankVHDUtils.PrepareVHD(TmpVHD, PrimaryGPT, BackupGPT);
-
-            return TmpVHD;
-        }
-
-        public string[] SupplementaryBCDCommands()
+        public string[] GetSupplementaryBCDCommands()
         {
             return [];
         }
 
-        public string PlatformID()
+        public string[] GetPlatformIDs()
         {
-            return "Microsoft Corporation.Surface.Surface Duo.1930;" +
-                "OEMB1.*.OEMB1 Product.*;" +
-                "OEMEP.*.OEMEP Product.*";
+            return ["Microsoft Corporation.Surface.Surface Duo.1930", "OEMB1.*.OEMB1 Product.*", "OEMEP.*.OEMEP Product.*"];
         }
 
-        public string FFUFileName(string OSVersion, string Language, string Sku)
+        public string GetFFUFileName(string OSVersion, string Language, string Sku)
         {
             return $"OEMEP_128GB_HalfSplit_{OSVersion}_CLIENT{Sku}_a64fre_{Language}_unsigned.ffu";
         }
 
-        public string DriverCommand(string DriverFolder)
+        public string GetDriverDefinitionPath(string DriverFolder)
         {
             return $@"{DriverFolder}\definitions\Desktop\ARM64\Internal\epsilon.xml";
+        }
+
+        public ulong GetDiskTotalSize()
+        {
+            //return 239_683_502_080; // 256GB (Bigger variant);
+            //return 239_651_758_080; // 256GB (Smaller variant);
+            return 111_723_675_648; // 128GB;
+        }
+
+        public uint GetDiskSectorSize()
+        {
+            return 4096;
+        }
+
+        // OEMEP DV UFS LUN 0 Partition Layout
+        public GPTPartition[] GetPartitionLayout()
+        {
+            return
+            [
+                new()
+                {
+                    TypeGUID = new Guid("2c86e742-745e-4fdd-bfd8-b6a7ac638772"),
+                    UID = new Guid("3e20174c-e289-a56a-39e7-2740b0043d24"),
+                    FirstLBA = 6,
+                    LastLBA = 7,
+                    Attributes = 0,
+                    Name = "ssd"
+                },
+                new()
+                {
+                    TypeGUID = new Guid("6c95e238-e343-4ba8-b489-8681ed22ad0b"),
+                    UID = new Guid("3c077ac9-fe70-fb01-9fda-3e03153145ea"),
+                    FirstLBA = 8,
+                    LastLBA = 8199,
+                    Attributes = 0,
+                    Name = "persist"
+                },
+                new()
+                {
+                    TypeGUID = new Guid("988a98c9-2910-4123-aaec-1cf6b1bc28f9"),
+                    UID = new Guid("b7f39878-935d-ed4b-ead8-48b159a31e04"),
+                    FirstLBA = 8200,
+                    LastLBA = 12295,
+                    Attributes = 0,
+                    Name = "metadata"
+                },
+                new()
+                {
+                    TypeGUID = new Guid("91b72d4d-71e0-4cbf-9b8e-236381cff17a"),
+                    UID = new Guid("04489c96-ae78-c997-efbf-1bc9909cd1ca"),
+                    FirstLBA = 12296,
+                    LastLBA = 12423,
+                    Attributes = 0,
+                    Name = "frp"
+                },
+                new()
+                {
+                    TypeGUID = new Guid("82acc91f-357c-4a68-9c8f-689e1b1a23a1"),
+                    UID = new Guid("b2ebcd63-842b-f5ff-bdf6-f630f7148b1f"),
+                    FirstLBA = 12424,
+                    LastLBA = 12679,
+                    Attributes = 0,
+                    Name = "misc"
+                },
+                new()
+                {
+                    TypeGUID = new Guid("1b81e7e6-f50d-419b-a739-2aeef8da3335"),
+                    UID = new Guid("e24f3f91-ed89-c235-d6b4-afada6edb8b7"),
+                    FirstLBA = 12680,
+                    LastLBA = 12679,
+                    Attributes = 0,
+                    Name = "userdata"
+                }
+            ];
+        }
+
+        public SplittingStrategy GetSplittingStrategy()
+        {
+            return SplittingStrategy.HalfSplit;
         }
     }
 }
