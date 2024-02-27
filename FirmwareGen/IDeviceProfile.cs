@@ -1,4 +1,5 @@
 ﻿using FirmwareGen.GPT;
+using System;
 
 namespace FirmwareGen
 {
@@ -12,5 +13,6 @@ namespace FirmwareGen
         uint GetDiskSectorSize();
         GPTPartition[] GetPartitionLayout();
         SplittingStrategy GetSplittingStrategy();
+        Guid GetDiskGuid();
     }
 }

@@ -155,5 +155,10 @@ namespace FirmwareGen.DeviceProfiles
         {
             return SplittingStrategy.MaximizedForWindows;
         }
+
+        public Guid GetDiskGuid()
+        {
+            return new Guid("efa6243a-085f-e745-f2ce-54d39ef34351");
+        }
     }
 }

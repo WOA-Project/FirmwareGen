@@ -7,7 +7,7 @@ namespace FirmwareGen.GPT
 {
     internal class GPTUtils
     {
-        internal static byte[] MakeGPT(ulong DiskSize, ulong SectorSize, GPTPartition[] DefaultPartitionTable, bool IsBackupGPT = false, bool SplitInHalf = true)
+        internal static byte[] MakeGPT(ulong DiskSize, ulong SectorSize, GPTPartition[] DefaultPartitionTable, Guid DiskGuid, bool IsBackupGPT = false, bool SplitInHalf = true)
         {
             ulong FirstLBA = 1;
             ulong LastLBA = (DiskSize / SectorSize) - 1;
@@ -27,7 +27,7 @@ namespace FirmwareGen.GPT
 
             InjectWindowsPartitions(Partitions, SectorSize, 4, SplitInHalf);
 
-            return MakeGPT(FirstLBA, LastLBA, SectorSize, [.. Partitions], PartitionArrayLBACount: PartitionArrayLBACount, IsBackupGPT: IsBackupGPT);
+            return MakeGPT(FirstLBA, LastLBA, SectorSize, [.. Partitions], DiskGuid, PartitionArrayLBACount: PartitionArrayLBACount, IsBackupGPT: IsBackupGPT);
         }
 
         private static void InjectWindowsPartitions(List<GPTPartition> Partitions, ulong SectorSize, ulong BlockSize, bool SplitInHalf)
@@ -141,7 +141,7 @@ namespace FirmwareGen.GPT
             Partitions[^3].LastLBA = ESPFirstLBA - 1;
         }
 
-        private static byte[] MakeGPT(ulong FirstLBA, ulong LastLBA, ulong SectorSize, GPTPartition[] Partitions, ulong PartitionArrayLBACount = 4, bool IsBackupGPT = false)
+        private static byte[] MakeGPT(ulong FirstLBA, ulong LastLBA, ulong SectorSize, GPTPartition[] Partitions, Guid DiskGuid, ulong PartitionArrayLBACount = 4, bool IsBackupGPT = false)
         {
             // -------------------
             // 0: Reserved/MBR
@@ -200,7 +200,7 @@ namespace FirmwareGen.GPT
                 BackupLBA = IsBackupGPT ? FirstLBA : LastLBA,
                 FirstUsableLBA = FirstUsableLBA,
                 LastUsableLBA = LastUsableLBA,
-                DiskGUID = new Guid("efa6243a-085f-e745-f2ce-54d39ef34351"),
+                DiskGUID = DiskGuid,
                 PartitionArrayLBA = IsBackupGPT ? LastLBA - TotalGPTLBACount + 1 : FirstLBA + 1,
                 PartitionEntryCount = PartitionEntryCount,
                 PartitionEntrySize = 128,
