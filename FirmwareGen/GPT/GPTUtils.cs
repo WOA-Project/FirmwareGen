@@ -7,7 +7,7 @@ namespace FirmwareGen.GPT
 {
     internal class GPTUtils
     {
-        internal static byte[] MakeGPT(ulong DiskSize, ulong SectorSize, GPTPartition[] DefaultPartitionTable, Guid DiskGuid, bool IsBackupGPT = false, bool SplitInHalf = true)
+        internal static byte[] MakeGPT(ulong DiskSize, ulong SectorSize, GPTPartition[] DefaultPartitionTable, Guid DiskGuid, bool IsBackupGPT = false, bool SplitInHalf = true, ulong AndroidDesiredSpace = 4_294_967_296)
         {
             ulong FirstLBA = 1;
             ulong LastLBA = (DiskSize / SectorSize) - 1;
@@ -25,12 +25,17 @@ namespace FirmwareGen.GPT
             List<GPTPartition> Partitions = new(DefaultPartitionTable);
             Partitions[^1].LastLBA = LastUsableLBA;
 
-            InjectWindowsPartitions(Partitions, SectorSize, 4, SplitInHalf);
+            if (AndroidDesiredSpace < 4_294_967_296)
+            {
+                throw new Exception("ERROR");
+            }
+
+            InjectWindowsPartitions(Partitions, SectorSize, 4, SplitInHalf, AndroidDesiredSpace);
 
             return MakeGPT(FirstLBA, LastLBA, SectorSize, [.. Partitions], DiskGuid, PartitionArrayLBACount: PartitionArrayLBACount, IsBackupGPT: IsBackupGPT);
         }
 
-        private static void InjectWindowsPartitions(List<GPTPartition> Partitions, ulong SectorSize, ulong BlockSize, bool SplitInHalf)
+        private static void InjectWindowsPartitions(List<GPTPartition> Partitions, ulong SectorSize, ulong BlockSize, bool SplitInHalf, ulong AndroidDesiredSpace = 4_294_967_296)
         {
             ulong FirstUsableLBA = Partitions.Last().FirstLBA;
             ulong LastUsableLBA = Partitions.Last().LastLBA;
@@ -72,7 +77,7 @@ namespace FirmwareGen.GPT
             /* Strategy to reserve 4GB for Android Only */
             else
             {
-                ulong FourGigaBytes = 4_294_967_296 / SectorSize;
+                ulong FourGigaBytes = AndroidDesiredSpace / SectorSize;
                 WindowsLBACount = UsableLBACount - ESPLBACount - FourGigaBytes;
 
                 if (WindowsLBACount < SixtyFourGigaBytes)
@@ -103,19 +108,19 @@ namespace FirmwareGen.GPT
             if ((ESPLastLBA + 1) % BlockSize != 0)
             {
                 ulong Padding = BlockSize - ((ESPLastLBA + 1) % BlockSize);
-                throw new Exception("ESPLastLBA + 1 overflew block alignment by:: " + Padding);
+                throw new Exception("ESPLastLBA + 1 overflew block alignment by: " + Padding);
             }
 
             if (WindowsFirstLBA % BlockSize != 0)
             {
                 ulong Padding = BlockSize - (WindowsFirstLBA % BlockSize);
-                throw new Exception("WindowsFirstLBA overflew block alignment by:: " + Padding);
+                throw new Exception("WindowsFirstLBA overflew block alignment by: " + Padding);
             }
 
             if ((WindowsLastLBA + 1) % BlockSize != 0)
             {
                 ulong Padding = BlockSize - ((WindowsLastLBA + 1) % BlockSize);
-                throw new Exception("WindowsLastLBA + 1 overflew block alignment by:: " + Padding);
+                throw new Exception("WindowsLastLBA + 1 overflew block alignment by: " + Padding);
             }
 
             Partitions.Add(new()
@@ -139,6 +144,33 @@ namespace FirmwareGen.GPT
             });
 
             Partitions[^3].LastLBA = ESPFirstLBA - 1;
+
+            ConsoleColor ogColor = Console.ForegroundColor;
+
+            ulong androidSpaceInBytes = (Partitions[^3].LastLBA - Partitions[^3].FirstLBA) * SectorSize;
+            ulong windowsSpaceInBytes = (Partitions[^1].LastLBA - Partitions[^1].FirstLBA) * SectorSize;
+
+            Console.WriteLine("Resulting Allocation after Computation, Compatibility Checks and Corrections:");
+            Console.WriteLine();
+            Console.WriteLine($"Android: {Math.Round(androidSpaceInBytes / (double)(1024 * 1024 * 1024), 2)}GB ({Math.Round(androidSpaceInBytes / (double)(1000 * 1000 * 1000), 2)}GiB)");
+            Console.WriteLine($"Windows: {Math.Round(windowsSpaceInBytes / (double)(1024 * 1024 * 1024), 2)}GB ({Math.Round(windowsSpaceInBytes / (double)(1000 * 1000 * 1000), 2)}GiB)");
+            Console.WriteLine();
+
+            Console.WriteLine("Resulting parted commands:");
+            Console.WriteLine();
+
+            Console.ForegroundColor = ConsoleColor.Green;
+
+            Console.WriteLine();
+            Console.WriteLine($"mkpart {Partitions[^3].Name} ext4 {Partitions[^3].FirstLBA}s {Partitions[^3].LastLBA}s");
+            Console.WriteLine();
+            Console.WriteLine($"mkpart {Partitions[^2].Name} fat32 {Partitions[^2].FirstLBA}s {Partitions[^2].LastLBA}s");
+            Console.WriteLine();
+            //Console.WriteLine($"mkpart {Partitions[^1].Name} ntfs {Partitions[^1].FirstLBA}s {Math.Truncate(Partitions[^1].LastLBA * SectorSize / (double)(1000 * 1000 * 1000))}GB");
+            Console.WriteLine($"mkpart {Partitions[^1].Name} ntfs {Partitions[^1].FirstLBA}s {Partitions[^1].LastLBA}s");
+            Console.WriteLine();
+
+            Console.ForegroundColor = ogColor;
         }
 
         private static byte[] MakeGPT(ulong FirstLBA, ulong LastLBA, ulong SectorSize, GPTPartition[] Partitions, Guid DiskGuid, ulong PartitionArrayLBACount = 4, bool IsBackupGPT = false)
