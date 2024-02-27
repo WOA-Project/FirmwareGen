@@ -5,43 +5,23 @@ namespace FirmwareGen.DeviceProfiles
 {
     internal class EpsilonMaximizedForWindows : IDeviceProfile
     {
-        public string[] GetSupplementaryBCDCommands()
-        {
-            return [];
-        }
+        public string[] GetSupplementaryBCDCommands() => [];
 
-        public string[] GetPlatformIDs()
-        {
-            return ["Microsoft Corporation.Surface.Surface Duo.1930", "OEMB1.*.OEMB1 Product.*", "OEMEP.*.OEMEP Product.*"];
-        }
+        public string[] GetPlatformIDs() => ["Microsoft Corporation.Surface.Surface Duo.1930", "OEMB1.*.OEMB1 Product.*", "OEMEP.*.OEMEP Product.*"];
 
-        public string GetFFUFileName(string OSVersion, string Language, string Sku)
-        {
-            return $"OEMEP_128GB_HalfSplit_{OSVersion}_CLIENT{Sku}_a64fre_{Language}_unsigned.ffu";
-        }
+        public string GetFFUFileName(string OSVersion, string Language, string Sku) => $"OEMEP_128GB_HalfSplit_{OSVersion}_CLIENT{Sku}_a64fre_{Language}_unsigned.ffu";
 
-        public string GetDriverDefinitionPath(string DriverFolder)
-        {
-            return $@"{DriverFolder}\definitions\Desktop\ARM64\Internal\epsilon.xml";
-        }
+        public string GetDriverDefinitionPath(string DriverFolder) => $@"{DriverFolder}\definitions\Desktop\ARM64\Internal\epsilon.xml";
 
-        public ulong GetDiskTotalSize()
-        {
+        public ulong GetDiskTotalSize() =>
             //return 239_683_502_080; // 256GB (Bigger variant);
             //return 239_651_758_080; // 256GB (Smaller variant);
-            return 111_723_675_648; // 128GB;
-        }
+            111_723_675_648; // 128GB;
 
-        public uint GetDiskSectorSize()
-        {
-            return 4096;
-        }
+        public uint GetDiskSectorSize() => 4096;
 
         // OEMEP DV UFS LUN 0 Partition Layout
-        public GPTPartition[] GetPartitionLayout()
-        {
-            return
-            [
+        public GPTPartition[] GetPartitionLayout() => [
                 new()
                 {
                     TypeGUID = new Guid("2c86e742-745e-4fdd-bfd8-b6a7ac638772"),
@@ -97,21 +77,11 @@ namespace FirmwareGen.DeviceProfiles
                     Name = "userdata"
                 }
             ];
-        }
 
-        public SplittingStrategy GetSplittingStrategy()
-        {
-            return SplittingStrategy.MaximizedForWindows;
-        }
+        public SplittingStrategy GetSplittingStrategy() => SplittingStrategy.MaximizedForWindows;
 
-        public Guid GetDiskGuid()
-        {
-            return new Guid("efa6243a-085f-e745-f2ce-54d39ef34351");
-        }
+        public Guid GetDiskGuid() => new Guid("efa6243a-085f-e745-f2ce-54d39ef34351");
 
-        public ulong GetCustomSplittingAndroidDesiredSpace()
-        {
-            return 4_294_967_296;
-        }
+        public ulong GetCustomSplittingAndroidDesiredSpace() => 4_294_967_296;
     }
 }

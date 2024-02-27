@@ -5,41 +5,20 @@ namespace FirmwareGen.DeviceProfiles
 {
     internal class MTP8150MaximizedForWindows : IDeviceProfile
     {
-        public string[] GetSupplementaryBCDCommands()
-        {
-            return [];
-        }
+        public string[] GetSupplementaryBCDCommands() => [];
 
-        public string[] GetPlatformIDs()
-        {
-            return ["Microsoft Corporation.Surface.MTP.SM8150"];
-        }
+        public string[] GetPlatformIDs() => ["Microsoft Corporation.Surface.MTP.SM8150"];
 
-        public string GetFFUFileName(string OSVersion, string Language, string Sku)
-        {
-            return $"QCOM_MTP_8150_MaximizedForWindows_{OSVersion}_CLIENT{Sku}_a64fre_{Language}_unsigned.ffu";
-        }
+        public string GetFFUFileName(string OSVersion, string Language, string Sku) => $"QCOM_MTP_8150_MaximizedForWindows_{OSVersion}_CLIENT{Sku}_a64fre_{Language}_unsigned.ffu";
 
-        public string GetDriverDefinitionPath(string DriverFolder)
-        {
-            return $@"{DriverFolder}\definitions\Desktop\ARM64\Internal\mtp855.xml";
-        }
+        public string GetDriverDefinitionPath(string DriverFolder) => $@"{DriverFolder}\definitions\Desktop\ARM64\Internal\mtp855.xml";
 
-        public ulong GetDiskTotalSize()
-        {
-            return 123_371_257_856; // 128GB;
-        }
+        public ulong GetDiskTotalSize() => 123_371_257_856; // 128GB;
 
-        public uint GetDiskSectorSize()
-        {
-            return 4096;
-        }
+        public uint GetDiskSectorSize() => 4096;
 
         // MTP855 UFS LUN 0 Partition Layout
-        public GPTPartition[] GetPartitionLayout()
-        {
-            return
-            [
+        public GPTPartition[] GetPartitionLayout() => [
                 new()
                 {
                     TypeGUID = new Guid("2c86e742-745e-4fdd-bfd8-b6a7ac638772"),
@@ -149,21 +128,11 @@ namespace FirmwareGen.DeviceProfiles
                     Name = "userdata"
                 }
             ];
-        }
 
-        public SplittingStrategy GetSplittingStrategy()
-        {
-            return SplittingStrategy.MaximizedForWindows;
-        }
+        public SplittingStrategy GetSplittingStrategy() => SplittingStrategy.MaximizedForWindows;
 
-        public Guid GetDiskGuid()
-        {
-            return new Guid("efa6243a-085f-e745-f2ce-54d39ef34351");
-        }
+        public Guid GetDiskGuid() => new Guid("efa6243a-085f-e745-f2ce-54d39ef34351");
 
-        public ulong GetCustomSplittingAndroidDesiredSpace()
-        {
-            return 4_294_967_296;
-        }
+        public ulong GetCustomSplittingAndroidDesiredSpace() => 4_294_967_296;
     }
 }
