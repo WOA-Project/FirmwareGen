@@ -12,7 +12,7 @@ namespace FirmwareGen.DeviceProfiles
                 "OEMC1.*.OEMC1 Product.*",
                 "OEMZE.*.OEMZE Product.*"];
 
-        public string GetFFUFileName(string OSVersion, string Language, string Sku) => $"OEMZE_512GB_HalfSplit_{OSVersion}_CLIENT{Sku}_a64fre_{Language}_unsigned.ffu";
+        public string GetFFUFileName() => $"OEMZE_512GB_HalfSplit.ffu";
 
         public string GetDriverDefinitionPath() => $@"\definitions\Desktop\ARM64\Internal\zeta.xml";
 

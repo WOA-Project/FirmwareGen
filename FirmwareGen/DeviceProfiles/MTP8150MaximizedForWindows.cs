@@ -9,7 +9,7 @@ namespace FirmwareGen.DeviceProfiles
 
         public string[] GetPlatformIDs() => ["Microsoft Corporation.Surface.MTP.SM8150"];
 
-        public string GetFFUFileName(string OSVersion, string Language, string Sku) => $"QCOM_MTP_8150_MaximizedForWindows_{OSVersion}_CLIENT{Sku}_a64fre_{Language}_unsigned.ffu";
+        public string GetFFUFileName() => $"QCOM_MTP_8150_MaximizedForWindows.ffu";
 
         public string GetDriverDefinitionPath() => $@"\definitions\Desktop\ARM64\Internal\mtp855.xml";
 

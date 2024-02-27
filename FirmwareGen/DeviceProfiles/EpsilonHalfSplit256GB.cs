@@ -9,7 +9,7 @@ namespace FirmwareGen.DeviceProfiles
 
         public string[] GetPlatformIDs() => ["Microsoft Corporation.Surface.Surface Duo.1930", "OEMB1.*.OEMB1 Product.*", "OEMEP.*.OEMEP Product.*"];
 
-        public string GetFFUFileName(string OSVersion, string Language, string Sku) => $"OEMEP_256GB_HalfSplit_{OSVersion}_CLIENT{Sku}_a64fre_{Language}_unsigned.ffu";
+        public string GetFFUFileName() => $"OEMEP_256GB_HalfSplit.ffu";
 
         public string GetDriverDefinitionPath() => $@"\definitions\Desktop\ARM64\Internal\epsilon.xml";
 

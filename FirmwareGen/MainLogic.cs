@@ -89,7 +89,7 @@ namespace FirmwareGen
                     version = string.Join(".", version.Split(".").Skip(2));
                 }
 
-                VolumeUtils.RunProgram(Img2Ffu, $@"-i {TmpVHD} -f ""{options.Output}\{deviceProfile.GetFFUFileName(version, "en-us", "PROFESSIONAL")}"" -c {deviceProfile.GetDiskSectorSize() * 4} -s {deviceProfile.GetDiskSectorSize()} -p ""{string.Join(";", deviceProfile.GetPlatformIDs())}"" -o {options.WindowsVer} -b 4000");
+                VolumeUtils.RunProgram(Img2Ffu, $@"-i {TmpVHD} -f ""{options.Output}\{deviceProfile.GetFFUFileName()}"" -c {deviceProfile.GetDiskSectorSize() * 4} -s {deviceProfile.GetDiskSectorSize()} -p ""{string.Join(";", deviceProfile.GetPlatformIDs())}"" -o {options.WindowsVer} -b 4000");
 
                 Logging.Log("Deleting Temp VHD");
                 File.Delete(TmpVHD);
