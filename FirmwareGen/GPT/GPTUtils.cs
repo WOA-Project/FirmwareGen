@@ -13,6 +13,12 @@ namespace FirmwareGen.GPT
             ulong LastLBA = (DiskSize / SectorSize) - 1;
 
             ulong PartitionArrayLBACount = 4;
+
+            if ((ulong)DefaultPartitionTable.Length * 128 > PartitionArrayLBACount * SectorSize)
+            {
+                throw new Exception("Unsupported Configuration, too many partitions to fit. File an issue");
+            }
+
             ulong TotalGPTLBACount = 1 /* GPT Header */ + PartitionArrayLBACount /* Partition Table */;
             ulong LastUsableLBA = LastLBA - TotalGPTLBACount;
 
@@ -164,6 +170,17 @@ namespace FirmwareGen.GPT
             ulong FirstUsableLBA = FirstLBA + TotalGPTLBACount;
             ulong LastUsableLBA = LastLBA - TotalGPTLBACount;
 
+            uint PartitionEntryCount = 32;
+            if ((uint)Partitions.Length + 2 > PartitionEntryCount)
+            {
+                if ((uint)Partitions.Length + 2 > PartitionEntryCount * 4)
+                {
+                    throw new Exception("Unsupported Configuration, too many partitions than supported, please file an issue.");
+                }
+
+                PartitionEntryCount = 128;
+            }
+
             GPTHeader Header = new()
             {
                 Signature = "EFI PART",
@@ -177,7 +194,7 @@ namespace FirmwareGen.GPT
                 LastUsableLBA = LastUsableLBA,
                 DiskGUID = new Guid("efa6243a-085f-e745-f2ce-54d39ef34351"),
                 PartitionArrayLBA = IsBackupGPT ? LastLBA - TotalGPTLBACount + 1 : FirstLBA + 1,
-                PartitionEntryCount = 32,
+                PartitionEntryCount = PartitionEntryCount,
                 PartitionEntrySize = 128,
                 PartitionArrayCRC32 = 0
             };
