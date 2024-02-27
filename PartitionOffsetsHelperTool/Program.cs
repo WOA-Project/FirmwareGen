@@ -193,7 +193,7 @@ namespace PartitionOffsetsHelperTool
             Console.WriteLine("Calculating offsets...");
             Console.WriteLine();
 
-            GPTUtils.MakeGPT(deviceCapacityInBytes, 4096, DeviceProfiles.Constants.OEMEP_UFS_LUN_0_PARTITIONS, requestedAndroidTotalCapacityInBytes);
+            GPTUtils.MakeGPT(deviceCapacityInBytes, 4096, DeviceProfiles.Constants.OEMEP_UFS_LUN_0_PARTITIONS, new Guid("efa6243a-085f-e745-f2ce-54d39ef34351"), SplitInHalf: false, AndroidDesiredSpace: requestedAndroidTotalCapacityInBytes);
 
             Console.WriteLine("");
             Console.WriteLine("Done! You can now use the commands provided above according to the");
@@ -368,7 +368,7 @@ namespace PartitionOffsetsHelperTool
             Console.WriteLine("Calculating offsets...");
             Console.WriteLine();
 
-            GPTUtils.MakeGPT(deviceCapacityInBytes, 4096, DeviceProfiles.Constants.OEMZE_UFS_LUN_0_PARTITIONS, requestedAndroidTotalCapacityInBytes);
+            GPTUtils.MakeGPT(deviceCapacityInBytes, 4096, DeviceProfiles.Constants.OEMZE_UFS_LUN_0_PARTITIONS, new Guid("efa6243a-085f-e745-f2ce-54d39ef34351"), SplitInHalf: false, AndroidDesiredSpace: requestedAndroidTotalCapacityInBytes);
 
             Console.WriteLine("");
             Console.WriteLine("Done! You can now use the commands provided above according to the");
