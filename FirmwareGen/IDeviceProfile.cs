@@ -8,7 +8,7 @@ namespace FirmwareGen
         string[] GetSupplementaryBCDCommands();
         string[] GetPlatformIDs();
         string GetFFUFileName(string OSVersion, string Language, string Sku);
-        string GetDriverDefinitionPath(string DriverFolder);
+        string GetDriverDefinitionPath();
         ulong GetDiskTotalSize();
         uint GetDiskSectorSize();
         GPTPartition[] GetPartitionLayout();

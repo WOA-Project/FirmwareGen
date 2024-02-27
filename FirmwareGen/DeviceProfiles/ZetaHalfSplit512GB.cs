@@ -14,7 +14,7 @@ namespace FirmwareGen.DeviceProfiles
 
         public string GetFFUFileName(string OSVersion, string Language, string Sku) => $"OEMZE_512GB_HalfSplit_{OSVersion}_CLIENT{Sku}_a64fre_{Language}_unsigned.ffu";
 
-        public string GetDriverDefinitionPath(string DriverFolder) => $@"{DriverFolder}\definitions\Desktop\ARM64\Internal\zeta.xml";
+        public string GetDriverDefinitionPath() => $@"\definitions\Desktop\ARM64\Internal\zeta.xml";
 
         public ulong GetDiskTotalSize() => throw new NotImplementedException();
 

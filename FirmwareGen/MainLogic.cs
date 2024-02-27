@@ -78,7 +78,7 @@ namespace FirmwareGen
                 }
 
                 Logging.Log("Adding drivers");
-                VolumeUtils.RunProgram(DriverUpdater, $@"-d ""{deviceProfile.GetDriverDefinitionPath(options.DriverPack)}"" -r ""{options.DriverPack}"" -p ""{VHDLetter}""");
+                VolumeUtils.RunProgram(DriverUpdater, $@"-d ""{options.DriverPack}{deviceProfile.GetDriverDefinitionPath()}"" -r ""{options.DriverPack}"" -p ""{VHDLetter}""");
 
                 VolumeUtils.DismountVirtualHardDisk(TmpVHD);
 

@@ -11,7 +11,7 @@ namespace FirmwareGen.DeviceProfiles
 
         public string GetFFUFileName(string OSVersion, string Language, string Sku) => $"OEMEP_128GB_HalfSplit_{OSVersion}_CLIENT{Sku}_a64fre_{Language}_unsigned.ffu";
 
-        public string GetDriverDefinitionPath(string DriverFolder) => $@"{DriverFolder}\definitions\Desktop\ARM64\Internal\epsilon.xml";
+        public string GetDriverDefinitionPath() => $@"\definitions\Desktop\ARM64\Internal\epsilon.xml";
 
         public ulong GetDiskTotalSize() =>
             //return 239_683_502_080; // 256GB (Bigger variant);

@@ -11,7 +11,7 @@ namespace FirmwareGen.DeviceProfiles
 
         public string GetFFUFileName(string OSVersion, string Language, string Sku) => $"QCOM_MTP_8150_MaximizedForWindows_{OSVersion}_CLIENT{Sku}_a64fre_{Language}_unsigned.ffu";
 
-        public string GetDriverDefinitionPath(string DriverFolder) => $@"{DriverFolder}\definitions\Desktop\ARM64\Internal\mtp855.xml";
+        public string GetDriverDefinitionPath() => $@"\definitions\Desktop\ARM64\Internal\mtp855.xml";
 
         public ulong GetDiskTotalSize() => 123_371_257_856; // 128GB;
 
