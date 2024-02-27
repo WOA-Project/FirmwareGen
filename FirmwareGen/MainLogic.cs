@@ -7,7 +7,7 @@ namespace FirmwareGen
 {
     public static class MainLogic
     {
-        private static readonly IDeviceProfile[] deviceProfiles =
+        private static readonly DeviceProfile[] deviceProfiles =
         [
             new EpsilonHalfSplit128GB(),
             new EpsilonHalfSplit256GB(),
@@ -51,7 +51,7 @@ namespace FirmwareGen
             const string DriverUpdater = "DriverUpdater.exe";
             const string SystemPartition = "Y:";
 
-            foreach (IDeviceProfile deviceProfile in deviceProfiles)
+            foreach (DeviceProfile deviceProfile in deviceProfiles)
             {
                 string TmpVHD = CommonLogic.GetBlankVHD(deviceProfile);
                 string DiskId = VolumeUtils.MountVirtualHardDisk(TmpVHD, false);
@@ -64,12 +64,12 @@ namespace FirmwareGen
                 VolumeUtils.ConfigureBootManager(VHDLetter, SystemPartition);
                 VolumeUtils.UnmountSystemPartition(DiskId, SystemPartition);
 
-                if (deviceProfile.GetSupplementaryBCDCommands().Length > 0)
+                if (deviceProfile.SupplementaryBCDCommands.Length > 0)
                 {
                     VolumeUtils.MountSystemPartition(DiskId, SystemPartition);
 
                     Logging.Log("Configuring supplemental boot");
-                    foreach (string command in deviceProfile.GetSupplementaryBCDCommands())
+                    foreach (string command in deviceProfile.SupplementaryBCDCommands)
                     {
                         VolumeUtils.RunProgram("bcdedit.exe", $"{$@"/store {SystemPartition}\EFI\Microsoft\Boot\BCD "}{command}");
                     }
@@ -78,7 +78,7 @@ namespace FirmwareGen
                 }
 
                 Logging.Log("Adding drivers");
-                VolumeUtils.RunProgram(DriverUpdater, $@"-d ""{options.DriverPack}{deviceProfile.GetDriverDefinitionPath()}"" -r ""{options.DriverPack}"" -p ""{VHDLetter}""");
+                VolumeUtils.RunProgram(DriverUpdater, $@"-d ""{options.DriverPack}{deviceProfile.DriverDefinitionPath}"" -r ""{options.DriverPack}"" -p ""{VHDLetter}""");
 
                 VolumeUtils.DismountVirtualHardDisk(TmpVHD);
 
@@ -89,7 +89,7 @@ namespace FirmwareGen
                     version = string.Join(".", version.Split(".").Skip(2));
                 }
 
-                VolumeUtils.RunProgram(Img2Ffu, $@"-i {TmpVHD} -f ""{options.Output}\{deviceProfile.GetFFUFileName()}"" -c {deviceProfile.GetDiskSectorSize() * 4} -s {deviceProfile.GetDiskSectorSize()} -p ""{string.Join(";", deviceProfile.GetPlatformIDs())}"" -o {options.WindowsVer} -b 4000");
+                VolumeUtils.RunProgram(Img2Ffu, $@"-i {TmpVHD} -f ""{options.Output}\{deviceProfile.FFUFileName}"" -c {deviceProfile.DiskSectorSize * 4} -s {deviceProfile.DiskSectorSize} -p ""{string.Join(";", deviceProfile.PlatformIDs)}"" -o {options.WindowsVer} -b 4000");
 
                 Logging.Log("Deleting Temp VHD");
                 File.Delete(TmpVHD);

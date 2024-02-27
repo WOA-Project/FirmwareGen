@@ -3,25 +3,25 @@ using System;
 
 namespace FirmwareGen.DeviceProfiles
 {
-    internal class EpsilonMaximizedForWindows : IDeviceProfile
+    internal class EpsilonMaximizedForWindows : DeviceProfile
     {
-        public string[] GetSupplementaryBCDCommands() => [];
+        public override string[] SupplementaryBCDCommands => [];
 
-        public string[] GetPlatformIDs() => ["Microsoft Corporation.Surface.Surface Duo.1930", "OEMB1.*.OEMB1 Product.*", "OEMEP.*.OEMEP Product.*"];
+        public override string[] PlatformIDs => ["Microsoft Corporation.Surface.Surface Duo.1930", "OEMB1.*.OEMB1 Product.*", "OEMEP.*.OEMEP Product.*"];
 
-        public string GetFFUFileName() => $"OEMEP_128GB_HalfSplit.ffu";
+        public override string FFUFileName => $"OEMEP_128GB_HalfSplit.ffu";
 
-        public string GetDriverDefinitionPath() => $@"\definitions\Desktop\ARM64\Internal\epsilon.xml";
+        public override string DriverDefinitionPath => $@"\definitions\Desktop\ARM64\Internal\epsilon.xml";
 
-        public ulong GetDiskTotalSize() =>
+        public override ulong DiskTotalSize =>
             //return 239_683_502_080; // 256GB (Bigger variant);
             //return 239_651_758_080; // 256GB (Smaller variant);
             111_723_675_648; // 128GB;
 
-        public uint GetDiskSectorSize() => 4096;
+        public override uint DiskSectorSize => 4096;
 
         // OEMEP DV UFS LUN 0 Partition Layout
-        public GPTPartition[] GetPartitionLayout() => [
+        public override GPTPartition[] PartitionLayout => [
                 new()
                 {
                     TypeGUID = new Guid("2c86e742-745e-4fdd-bfd8-b6a7ac638772"),
@@ -78,10 +78,10 @@ namespace FirmwareGen.DeviceProfiles
                 }
             ];
 
-        public SplittingStrategy GetSplittingStrategy() => SplittingStrategy.MaximizedForWindows;
+        public override SplittingStrategy SplittingStrategy => SplittingStrategy.MaximizedForWindows;
 
-        public Guid GetDiskGuid() => new Guid("efa6243a-085f-e745-f2ce-54d39ef34351");
+        public override Guid DiskGuid => new Guid("efa6243a-085f-e745-f2ce-54d39ef34351");
 
-        public ulong GetCustomSplittingAndroidDesiredSpace() => 4_294_967_296;
+        public override ulong CustomSplittingAndroidDesiredSpace => 4_294_967_296;
     }
 }

@@ -6,10 +6,10 @@ namespace FirmwareGen
 {
     internal class CommonLogic
     {
-        public static byte[] GetPrimaryGPT(IDeviceProfile deviceProfile)
+        public static byte[] GetPrimaryGPT(DeviceProfile deviceProfile)
         {
-            ulong DiskSize = deviceProfile.GetDiskTotalSize();
-            uint SectorSize = deviceProfile.GetDiskSectorSize();
+            ulong DiskSize = deviceProfile.DiskTotalSize;
+            uint SectorSize = deviceProfile.DiskSectorSize;
 
             byte[] PrimaryMBR = new byte[SectorSize];
             PrimaryMBR[0x1C0] = 0x01;
@@ -27,22 +27,22 @@ namespace FirmwareGen
 
             return [
                 .. PrimaryMBR,
-                .. GPTUtils.MakeGPT(DiskSize, SectorSize, deviceProfile.GetPartitionLayout(), deviceProfile.GetDiskGuid(), IsBackupGPT: false, SplitInHalf: deviceProfile.GetSplittingStrategy() == SplittingStrategy.HalfSplit, AndroidDesiredSpace: deviceProfile.GetSplittingStrategy() == SplittingStrategy.Custom ? deviceProfile.GetCustomSplittingAndroidDesiredSpace() : 4_294_967_296)
+                .. GPTUtils.MakeGPT(DiskSize, SectorSize, deviceProfile.PartitionLayout, deviceProfile.DiskGuid, IsBackupGPT: false, SplitInHalf: deviceProfile.SplittingStrategy == SplittingStrategy.HalfSplit, AndroidDesiredSpace: deviceProfile.SplittingStrategy == SplittingStrategy.Custom ? deviceProfile.CustomSplittingAndroidDesiredSpace : 4_294_967_296)
             ];
         }
 
-        public static byte[] GetBackupGPT(IDeviceProfile deviceProfile)
+        public static byte[] GetBackupGPT(DeviceProfile deviceProfile)
         {
-            ulong DiskSize = deviceProfile.GetDiskTotalSize();
-            uint SectorSize = deviceProfile.GetDiskSectorSize();
+            ulong DiskSize = deviceProfile.DiskTotalSize;
+            uint SectorSize = deviceProfile.DiskSectorSize;
 
-            return GPTUtils.MakeGPT(DiskSize, SectorSize, deviceProfile.GetPartitionLayout(), deviceProfile.GetDiskGuid(), IsBackupGPT: true, SplitInHalf: deviceProfile.GetSplittingStrategy() == SplittingStrategy.HalfSplit, AndroidDesiredSpace: deviceProfile.GetSplittingStrategy() == SplittingStrategy.Custom ? deviceProfile.GetCustomSplittingAndroidDesiredSpace() : 4_294_967_296);
+            return GPTUtils.MakeGPT(DiskSize, SectorSize, deviceProfile.PartitionLayout, deviceProfile.DiskGuid, IsBackupGPT: true, SplitInHalf: deviceProfile.SplittingStrategy == SplittingStrategy.HalfSplit, AndroidDesiredSpace: deviceProfile.SplittingStrategy == SplittingStrategy.Custom ? deviceProfile.CustomSplittingAndroidDesiredSpace : 4_294_967_296);
         }
 
-        public static string GetBlankVHD(IDeviceProfile deviceProfile)
+        public static string GetBlankVHD(DeviceProfile deviceProfile)
         {
-            ulong DiskSize = deviceProfile.GetDiskTotalSize();
-            uint SectorSize = deviceProfile.GetDiskSectorSize();
+            ulong DiskSize = deviceProfile.DiskTotalSize;
+            uint SectorSize = deviceProfile.DiskSectorSize;
 
             const string tmp = "tmp";
             const string TmpVHD = $@"{tmp}\temp.vhdx";

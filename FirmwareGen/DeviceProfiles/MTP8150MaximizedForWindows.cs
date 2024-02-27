@@ -3,22 +3,22 @@ using System;
 
 namespace FirmwareGen.DeviceProfiles
 {
-    internal class MTP8150MaximizedForWindows : IDeviceProfile
+    internal class MTP8150MaximizedForWindows : DeviceProfile
     {
-        public string[] GetSupplementaryBCDCommands() => [];
+        public override string[] SupplementaryBCDCommands => [];
 
-        public string[] GetPlatformIDs() => ["Microsoft Corporation.Surface.MTP.SM8150"];
+        public override string[] PlatformIDs => ["Microsoft Corporation.Surface.MTP.SM8150"];
 
-        public string GetFFUFileName() => $"QCOM_MTP_8150_MaximizedForWindows.ffu";
+        public override string FFUFileName => $"QCOM_MTP_8150_MaximizedForWindows.ffu";
 
-        public string GetDriverDefinitionPath() => $@"\definitions\Desktop\ARM64\Internal\mtp855.xml";
+        public override string DriverDefinitionPath => $@"\definitions\Desktop\ARM64\Internal\mtp855.xml";
 
-        public ulong GetDiskTotalSize() => 123_371_257_856; // 128GB;
+        public override ulong DiskTotalSize => 123_371_257_856; // 128GB;
 
-        public uint GetDiskSectorSize() => 4096;
+        public override uint DiskSectorSize => 4096;
 
         // MTP855 UFS LUN 0 Partition Layout
-        public GPTPartition[] GetPartitionLayout() => [
+        public override GPTPartition[] PartitionLayout => [
                 new()
                 {
                     TypeGUID = new Guid("2c86e742-745e-4fdd-bfd8-b6a7ac638772"),
@@ -129,10 +129,10 @@ namespace FirmwareGen.DeviceProfiles
                 }
             ];
 
-        public SplittingStrategy GetSplittingStrategy() => SplittingStrategy.MaximizedForWindows;
+        public override SplittingStrategy SplittingStrategy => SplittingStrategy.MaximizedForWindows;
 
-        public Guid GetDiskGuid() => new Guid("efa6243a-085f-e745-f2ce-54d39ef34351");
+        public override Guid DiskGuid => new Guid("efa6243a-085f-e745-f2ce-54d39ef34351");
 
-        public ulong GetCustomSplittingAndroidDesiredSpace() => 4_294_967_296;
+        public override ulong CustomSplittingAndroidDesiredSpace => 4_294_967_296;
     }
 }

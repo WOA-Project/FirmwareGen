@@ -3,25 +3,25 @@ using System;
 
 namespace FirmwareGen.DeviceProfiles
 {
-    internal class ZetaHalfSplit512GB : IDeviceProfile
+    internal class ZetaHalfSplit512GB : DeviceProfile
     {
-        public string[] GetSupplementaryBCDCommands() => [];
+        public override string[] SupplementaryBCDCommands => [];
 
-        public string[] GetPlatformIDs() => ["Microsoft Corporation.Surface.Surface Duo 2.1995",
+        public override string[] PlatformIDs => ["Microsoft Corporation.Surface.Surface Duo 2.1995",
                 "Microsoft Corporation.Surface.Surface Duo 2.1968",
                 "OEMC1.*.OEMC1 Product.*",
                 "OEMZE.*.OEMZE Product.*"];
 
-        public string GetFFUFileName() => $"OEMZE_512GB_HalfSplit.ffu";
+        public override string FFUFileName => $"OEMZE_512GB_HalfSplit.ffu";
 
-        public string GetDriverDefinitionPath() => $@"\definitions\Desktop\ARM64\Internal\zeta.xml";
+        public override string DriverDefinitionPath => $@"\definitions\Desktop\ARM64\Internal\zeta.xml";
 
-        public ulong GetDiskTotalSize() => throw new NotImplementedException();
+        public override ulong DiskTotalSize => throw new NotImplementedException();
 
-        public uint GetDiskSectorSize() => 4096;
+        public override uint DiskSectorSize => 4096;
 
         // OEMZE MP UFS LUN 0 Partition Layout
-        public GPTPartition[] GetPartitionLayout() => [
+        public override GPTPartition[] PartitionLayout => [
                     new()
                 {
                     TypeGUID = new Guid("2c86e742-745e-4fdd-bfd8-b6a7ac638772"),
@@ -96,10 +96,10 @@ namespace FirmwareGen.DeviceProfiles
                 }
             ];
 
-        public SplittingStrategy GetSplittingStrategy() => SplittingStrategy.HalfSplit;
+        public override SplittingStrategy SplittingStrategy => SplittingStrategy.HalfSplit;
 
-        public Guid GetDiskGuid() => new Guid("efa6243a-085f-e745-f2ce-54d39ef34351");
+        public override Guid DiskGuid => new Guid("efa6243a-085f-e745-f2ce-54d39ef34351");
 
-        public ulong GetCustomSplittingAndroidDesiredSpace() => 4_294_967_296;
+        public override ulong CustomSplittingAndroidDesiredSpace => 4_294_967_296;
     }
 }
