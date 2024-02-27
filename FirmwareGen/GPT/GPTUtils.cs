@@ -170,15 +170,23 @@ namespace FirmwareGen.GPT
             ulong FirstUsableLBA = FirstLBA + TotalGPTLBACount;
             ulong LastUsableLBA = LastLBA - TotalGPTLBACount;
 
-            uint PartitionEntryCount = 32;
-            if ((uint)Partitions.Length + 2 > PartitionEntryCount)
-            {
-                if ((uint)Partitions.Length + 2 > PartitionEntryCount * 4)
-                {
-                    throw new Exception("Unsupported Configuration, too many partitions than supported, please file an issue.");
-                }
+            uint PartitionEntryCount;
 
+            if ((uint)Partitions.Length > 128)
+            {
+                throw new Exception("Unsupported Configuration, too many partitions than supported, please file an issue.");
+            }
+            else if ((uint)Partitions.Length > 64)
+            {
                 PartitionEntryCount = 128;
+            }
+            else if ((uint)Partitions.Length > 32)
+            {
+                PartitionEntryCount = 64;
+            }
+            else
+            {
+                PartitionEntryCount = 32;
             }
 
             GPTHeader Header = new()
@@ -198,7 +206,6 @@ namespace FirmwareGen.GPT
                 PartitionEntrySize = 128,
                 PartitionArrayCRC32 = 0
             };
-
 
             List<byte> PartitionTableBuffer = [];
             for (int i = 0; i < Partitions.Length; i++)
