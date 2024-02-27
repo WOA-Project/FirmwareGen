@@ -127,5 +127,10 @@ namespace FirmwareGen.DeviceProfiles
         {
             return new Guid("efa6243a-085f-e745-f2ce-54d39ef34351");
         }
+
+        public ulong GetCustomSplittingAndroidDesiredSpace()
+        {
+            return 4_294_967_296;
+        }
     }
 }

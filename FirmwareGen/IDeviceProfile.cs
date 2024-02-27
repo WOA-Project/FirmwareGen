@@ -13,6 +13,7 @@ namespace FirmwareGen
         uint GetDiskSectorSize();
         GPTPartition[] GetPartitionLayout();
         SplittingStrategy GetSplittingStrategy();
+        ulong GetCustomSplittingAndroidDesiredSpace();
         Guid GetDiskGuid();
     }
 }
