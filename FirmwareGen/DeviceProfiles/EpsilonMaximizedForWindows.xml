@@ -6,7 +6,7 @@
     <string>OEMB1.*.OEMB1 Product.*</string>
     <string>OEMEP.*.OEMEP Product.*</string>
   </PlatformIDs>
-  <FFUFileName>OEMEP_128GB_HalfSplit.ffu</FFUFileName>
+  <FFUFileName>OEMEP_128GB_MaximizedForWindows.ffu</FFUFileName>
   <DriverDefinitionPath>\definitions\Desktop\ARM64\Internal\epsilon.xml</DriverDefinitionPath>
   <DiskTotalSize>111723675648</DiskTotalSize>
   <DiskSectorSize>4096</DiskSectorSize>
