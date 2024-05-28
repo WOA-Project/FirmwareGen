@@ -23,13 +23,13 @@ namespace FirmwareGen.CommandLine
             get; set;
         }
 
-        [Option('w', "windows-dvd", HelpText = "Windows Setup Media DVD drive", Required = true)]
+        [Option('w', "windows-dvd", HelpText = "Windows Setup Media DVD drive letter e.g. F:", Required = true)]
         public string WindowsDVD
         {
             get; set;
         }
 
-        [Option('i', "windows-index", HelpText = "Index of windows, professional or other, e.g. 1", Required = true)]
+        [Option('i', "windows-index", HelpText = "The index of the Windows Setup Media DVD Install Image, to apply. e.g. 1", Required = true)]
         public string WindowsIndex
         {
             get; set;
