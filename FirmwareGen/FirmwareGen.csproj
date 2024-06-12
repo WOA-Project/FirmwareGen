@@ -29,9 +29,6 @@
 	  <Content Include="DeviceProfiles\EpsilonMaximizedForWindows.xml">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="DeviceProfiles\MTP8150MaximizedForWindows.xml">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
 	  <Content Include="DeviceProfiles\ZetaHalfSplit128GB.xml">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
@@ -42,6 +39,15 @@
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="DeviceProfiles\ZetaMaximizedForWindows.xml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="DeviceProfiles\MTP8150MaximizedForWindows.xml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="DeviceProfiles\QRD8150MaximizedForWindows.xml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="DeviceProfiles\MTP50MaximizedForWindows.xml">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="DeviceProfiles\MTP8350MaximizedForWindows.xml">
