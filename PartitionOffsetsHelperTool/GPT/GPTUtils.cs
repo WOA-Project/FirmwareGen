@@ -63,6 +63,11 @@ namespace PartitionOffsetsHelperTool.GPT
                 ulong AndroidOtherLUNLBAUsage = 8_679_372 /* Size taken in Android by another LUN that counts towards Android space utilization */;
                 WindowsLBACount = (UsableLBACount + AndroidOtherLUNLBAUsage - ESPLBACount) / 2;
 
+                // Windows System Requirement Specifications mandate the Windows Partition must 
+                // be at the very least 64GB in size for meeting the minimum Windows Specification 
+                // requirements. It is a violation of the Windows minimum Specification requirements
+                // to override this value for Windows 11 Products and your device will not be
+                // compatible or supported for Windows 11 if this gets changed.
                 if (WindowsLBACount < SixtyFourGigaBytes)
                 {
                     WindowsLBACount = SixtyFourGigaBytes;
@@ -80,6 +85,11 @@ namespace PartitionOffsetsHelperTool.GPT
                 ulong FourGigaBytes = AndroidDesiredSpace / SectorSize;
                 WindowsLBACount = UsableLBACount - ESPLBACount - FourGigaBytes;
 
+                // Windows System Requirement Specifications mandate the Windows Partition must 
+                // be at the very least 64GB in size for meeting the minimum Windows Specification 
+                // requirements. It is a violation of the Windows minimum Specification requirements
+                // to override this value for Windows 11 Products and your device will not be
+                // compatible or supported for Windows 11 if this gets changed.
                 if (WindowsLBACount < SixtyFourGigaBytes)
                 {
                     WindowsLBACount = SixtyFourGigaBytes;
