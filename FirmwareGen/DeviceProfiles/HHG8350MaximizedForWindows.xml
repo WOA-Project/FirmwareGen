@@ -2,17 +2,17 @@
 <DeviceProfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <SupplementaryBCDCommands />
   <PlatformIDs>
-    <string>Qualcomm.SDM855.MTP.*</string>
-    <string>Qualcomm.SDA855.MTP.*</string>
+    <string>Qualcomm.SM_LAHAINA.HHG.*</string>
+    <string>Qualcomm.SMP_LAHAINA.HHG.*</string>
   </PlatformIDs>
-  <FFUFileName>QCOM_MTP_8150_MaximizedForWindows.ffu</FFUFileName>
-  <DriverDefinitionPath>\definitions\Desktop\ARM64\Internal\mtp855.xml</DriverDefinitionPath>
+  <FFUFileName>QCOM_HHG_8350_MaximizedForWindows.ffu</FFUFileName>
+  <DriverDefinitionPath>\definitions\Desktop\ARM64\Internal\hhg888.xml</DriverDefinitionPath>
   <DiskTotalSize>110394081280</DiskTotalSize>
   <DiskSectorSize>4096</DiskSectorSize>
   <PartitionLayout>
     <GPTPartition>
       <TypeGUID>2c86e742-745e-4fdd-bfd8-b6a7ac638772</TypeGUID>
-      <UID>e4664002-ccca-c1e6-8d43-1283bf19dada</UID>
+      <UID>5c0efacf-c95b-8552-b9c9-1d060a2b3739</UID>
       <FirstLBA>6</FirstLBA>
       <LastLBA>7</LastLBA>
       <Attributes>0</Attributes>
@@ -20,7 +20,7 @@
     </GPTPartition>
     <GPTPartition>
       <TypeGUID>6c95e238-e343-4ba8-b489-8681ed22ad0b</TypeGUID>
-      <UID>9ae53ef9-8fe5-1f9b-dcef-a044c07a0111</UID>
+      <UID>b7496373-6f5c-e337-a537-df594768fb58</UID>
       <FirstLBA>8</FirstLBA>
       <LastLBA>8199</LastLBA>
       <Attributes>0</Attributes>
@@ -28,7 +28,7 @@
     </GPTPartition>
     <GPTPartition>
       <TypeGUID>82acc91f-357c-4a68-9c8f-689e1b1a23a1</TypeGUID>
-      <UID>1755304d-84e7-e081-d7c2-06e3dd58ba1e</UID>
+      <UID>7a83b05f-baac-19af-828f-bf7fd7210e79</UID>
       <FirstLBA>8200</FirstLBA>
       <LastLBA>8455</LastLBA>
       <Attributes>0</Attributes>
@@ -36,7 +36,7 @@
     </GPTPartition>
     <GPTPartition>
       <TypeGUID>de7d4029-0f5b-41c8-ae7e-f6c023a02b33</TypeGUID>
-      <UID>bcb1081a-c833-8f9f-f36e-36ec0f204497</UID>
+      <UID>12d14ad6-e1cb-c065-97d0-398b5baa9b93</UID>
       <FirstLBA>8456</FirstLBA>
       <LastLBA>8583</LastLBA>
       <Attributes>0</Attributes>
@@ -44,65 +44,57 @@
     </GPTPartition>
     <GPTPartition>
       <TypeGUID>91b72d4d-71e0-4cbf-9b8e-236381cff17a</TypeGUID>
-      <UID>12d284d7-a08b-166e-e6fa-8958d40a7e5d</UID>
+      <UID>76be6a4f-137c-01d9-9546-cb556c74e41a</UID>
       <FirstLBA>8584</FirstLBA>
       <LastLBA>8711</LastLBA>
       <Attributes>0</Attributes>
       <Name>frp</Name>
     </GPTPartition>
     <GPTPartition>
-      <TypeGUID>97d7b011-54da-4835-b3c4-917ad6e73d74</TypeGUID>
-      <UID>7a014fe0-8aeb-40b7-6c53-9ece882dd34f</UID>
+      <TypeGUID>89a12de1-5e41-4cb3-8b4c-b1441eb5da38</TypeGUID>
+      <UID>cc6cd14a-83ea-dec5-b78d-fe7e91bcf38d</UID>
       <FirstLBA>8712</FirstLBA>
-      <LastLBA>795143</LastLBA>
-      <Attributes>19140298416324608</Attributes>
-      <Name>system_a</Name>
-    </GPTPartition>
-    <GPTPartition>
-      <TypeGUID>77036cd4-03d5-42bb-8ed1-37e5a88baa34</TypeGUID>
-      <UID>220f67a2-6c3a-2e4c-5762-a2b1ce46c88f</UID>
-      <FirstLBA>795144</FirstLBA>
       <LastLBA>1581575</LastLBA>
       <Attributes>0</Attributes>
-      <Name>system_b</Name>
+      <Name>super</Name>
     </GPTPartition>
     <GPTPartition>
-      <TypeGUID>c5f681cc-9742-4641-be4e-976eeb638eee</TypeGUID>
-      <UID>6e280891-3254-9666-e767-abdeff5148c7</UID>
+      <TypeGUID>1344859d-3a6a-4c14-a316-9e696b3a5400</TypeGUID>
+      <UID>92fbed6b-319b-187c-f0c5-4f351cf8d577</UID>
       <FirstLBA>1581576</FirstLBA>
-      <LastLBA>1614343</LastLBA>
-      <Attributes>19140298416324608</Attributes>
-      <Name>vm-system_a</Name>
+      <LastLBA>1581591</LastLBA>
+      <Attributes>1154047404513689600</Attributes>
+      <Name>vbmeta_system_a</Name>
     </GPTPartition>
     <GPTPartition>
-      <TypeGUID>77036cd4-03d5-42bb-8ed1-37e5a88baa34</TypeGUID>
-      <UID>445d2099-5870-5ef3-2a0d-b0e1ed122fac</UID>
-      <FirstLBA>1614344</FirstLBA>
-      <LastLBA>1647111</LastLBA>
-      <Attributes>0</Attributes>
-      <Name>vm-system_b</Name>
+      <TypeGUID>fe3ab853-5b66-4d4a-bf85-8d90af1c2c4a</TypeGUID>
+      <UID>a2c44005-d54c-a0e7-9935-953882d972c1</UID>
+      <FirstLBA>1581592</FirstLBA>
+      <LastLBA>1581607</LastLBA>
+      <Attributes>1152921504606846976</Attributes>
+      <Name>vbmeta_system_b</Name>
     </GPTPartition>
     <GPTPartition>
       <TypeGUID>988a98c9-2910-4123-aaec-1cf6b1bc28f9</TypeGUID>
-      <UID>99d89ebb-23f1-0b5d-468d-4aa0b9dacb24</UID>
-      <FirstLBA>1647112</FirstLBA>
-      <LastLBA>1651207</LastLBA>
+      <UID>a1cf022e-9d11-8039-ef48-9af5c951c0dd</UID>
+      <FirstLBA>1581608</FirstLBA>
+      <LastLBA>1585703</LastLBA>
       <Attributes>0</Attributes>
       <Name>metadata</Name>
     </GPTPartition>
     <GPTPartition>
       <TypeGUID>66c9b323-f7fc-48b6-bf96-6f32e335a428</TypeGUID>
-      <UID>3050c26a-6e4e-adae-7da4-e5680f9c1a89</UID>
-      <FirstLBA>1651208</FirstLBA>
-      <LastLBA>1683975</LastLBA>
+      <UID>0b708144-873d-0389-401f-e5aaebd85a0a</UID>
+      <FirstLBA>1585704</FirstLBA>
+      <LastLBA>4782631</LastLBA>
       <Attributes>0</Attributes>
       <Name>rawdump</Name>
     </GPTPartition>
     <GPTPartition>
       <TypeGUID>1b81e7e6-f50d-419b-a739-2aeef8da3335</TypeGUID>
-      <UID>6b977b5e-5ac9-6b48-38b3-f2fc9764e9b8</UID>
-      <FirstLBA>1683976</FirstLBA>
-      <LastLBA>1683975</LastLBA>
+      <UID>39154595-4e32-d057-d362-cbae468477b3</UID>
+      <FirstLBA>4782632</FirstLBA>
+      <LastLBA>4782631</LastLBA>
       <Attributes>0</Attributes>
       <Name>userdata</Name>
     </GPTPartition>

@@ -2,11 +2,12 @@
 <DeviceProfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <SupplementaryBCDCommands />
   <PlatformIDs>
-    <string>Microsoft Corporation.Surface.QRD.SM8150</string>
+    <string>Qualcomm.SDM855.QRD.*</string>
+    <string>Qualcomm.SDA855.QRD.*</string>
   </PlatformIDs>
   <FFUFileName>QCOM_QRD_8150_MaximizedForWindows.ffu</FFUFileName>
   <DriverDefinitionPath>\definitions\Desktop\ARM64\Internal\qrd855.xml</DriverDefinitionPath>
-  <DiskTotalSize>123371257856</DiskTotalSize>
+  <DiskTotalSize>110394081280</DiskTotalSize>
   <DiskSectorSize>4096</DiskSectorSize>
   <PartitionLayout>
     <GPTPartition>
