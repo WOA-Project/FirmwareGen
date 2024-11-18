@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<Platforms>ARM32;ARM64;x86;x64</Platforms>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CommandLineParser" Version="2.9.1" />
+		<PackageReference Include="LTRData.DiscUtils.Ntfs" Version="1.0.47" />
+		<PackageReference Include="LTRData.DiscUtils.Vhd" Version="1.0.47" />
+		<PackageReference Include="LTRData.DiscUtils.Vhdx" Version="1.0.47" />
+	</ItemGroup>
+
+</Project>
