@@ -56,6 +56,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="CommandLineParser" Version="2.9.1" />
-		<PackageReference Include="LTRData.DiscUtils.Vhdx" Version="1.0.38" />
+		<PackageReference Include="LTRData.DiscUtils.Vhdx" Version="1.0.50" />
 	</ItemGroup>
 </Project>
