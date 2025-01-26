@@ -110,8 +110,10 @@ namespace GPTFixer
 
             uint SectorSize = args.SectorSize;
 
+            Console.WriteLine("Getting GPT from input...");
             GPT GPT = GetGPT(InputStream, SectorSize);
 
+            Console.WriteLine("Constructing new partition list...");
             List<FirmwareGen.GPT.GPTPartition> gptPartitions = [];
 
             foreach (GPT.Partition partition in GPT.Partitions)
@@ -140,15 +142,25 @@ namespace GPTFixer
                 gptPartitions.Add(gptPartition);
             }
 
-            byte[] PrimaryGPT = CommonLogic.GetPrimaryGPT(GPT.LastUsableSector * SectorSize, SectorSize, GPT.DiskGuid, [.. gptPartitions]);
-            byte[] BackupGPT = CommonLogic.GetBackupGPT(GPT.LastUsableSector * SectorSize, SectorSize, GPT.DiskGuid, [.. gptPartitions]);
+            ulong TotalDiskSize = (ulong)InputStream.Length;
+            Console.WriteLine($"Total Disk Size {TotalDiskSize:X}");
 
+            Console.WriteLine("Constructing Primary GPT binary...");
+            byte[] PrimaryGPT = CommonLogic.GetPrimaryGPT(TotalDiskSize, SectorSize, GPT.DiskGuid, [.. gptPartitions]);
+
+            Console.WriteLine("Constructing Backup GPT binary...");
+            byte[] BackupGPT = CommonLogic.GetBackupGPT(TotalDiskSize, SectorSize, GPT.DiskGuid, [.. gptPartitions]);
+
+            Console.WriteLine("Writing Primary GPT binary...");
             InputStream.Seek(0, SeekOrigin.Begin);
             InputStream.Write(PrimaryGPT);
 
-            InputStream.Seek(-BackupGPT.Length, SeekOrigin.End);
+            Console.WriteLine("Writing Backup GPT binary...");
+
+            InputStream.Seek((long)(TotalDiskSize - (ulong)BackupGPT.Length), SeekOrigin.Begin);
             InputStream.Write(BackupGPT);
 
+            Console.WriteLine("Closing Input...");
             InputStream.Flush();
             InputDisk?.Dispose();
         }
