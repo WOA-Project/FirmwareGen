@@ -1,4 +1,5 @@
-﻿using FirmwareGen.CommandLine;
+﻿using DiscUtils.Streams;
+using FirmwareGen.CommandLine;
 using FirmwareGen.DeviceProfiles;
 using FirmwareGen.Streams;
 using System;
@@ -97,13 +98,12 @@ namespace FirmwareGen
 
                 Logging.Log("Copying Main VHD");
                 VolumeUtils.CopyFile(options.Input, TmpVHD);
-                string DiskId = VolumeUtils.MountVirtualHardDisk(TmpVHD, false);
-                string TVHDLetter = VolumeUtils.GetVirtualHardDiskLetterFromDiskID(DiskId);
 
                 Logging.Log("Writing Bootloader");
-                WriteBootLoaderToDisk(DiskId, deviceProfile);
-                VolumeUtils.DismountVirtualHardDisk(TmpVHD);
-                DiskId = VolumeUtils.MountVirtualHardDisk(TmpVHD, false);
+                WriteBootLoaderToDisk(TmpVHD, deviceProfile);
+
+                string DiskId = VolumeUtils.MountVirtualHardDisk(TmpVHD, false);
+                string TVHDLetter = VolumeUtils.GetVirtualHardDiskLetterFromDiskID(DiskId);
 
                 Logging.Log("Writing UEFI");
                 File.Copy(deviceProfile.UEFIELFPath(), $@"{TVHDLetter}\EFIESP\UEFI.elf", true);
@@ -122,7 +122,7 @@ namespace FirmwareGen
                 }
 
                 Logging.Log("Adding drivers");
-                VolumeUtils.RunProgram(DriverUpdater, $"{deviceProfile.DriverCommand(options.DriverPack)} {options.DriverPack} {TVHDLetter}");
+                VolumeUtils.RunProgram(DriverUpdater, $"-d {deviceProfile.DriverCommand(options.DriverPack)} -r {options.DriverPack} -p {TVHDLetter}");
 
                 VolumeUtils.DismountVirtualHardDisk(TmpVHD);
 
@@ -140,22 +140,23 @@ namespace FirmwareGen
             }
         }
 
-        public static void WriteBootLoaderToDisk(string DiskId, IDeviceProfile deviceProfile)
+        public static void WriteBootLoaderToDisk(string VHDPath, IDeviceProfile deviceProfile)
         {
             const int chunkSize = 131072;
-            DeviceStream ds = new(DiskId, FileAccess.ReadWrite);
-            _ = ds.Seek(0, SeekOrigin.Begin);
-            byte[] bootloader = File.ReadAllBytes(deviceProfile.Bootloader());
+            DiscUtils.Vhdx.Disk ds = new(VHDPath, FileAccess.ReadWrite);
 
-            int sectors = bootloader.Length / chunkSize;
+            using FileStream bootloader = File.OpenRead(deviceProfile.Bootloader());
+            ds.Content.Seek(0, SeekOrigin.Begin);
+
+            int sectors = (int)bootloader.Length / chunkSize;
 
             DateTime startTime = DateTime.Now;
-            using (BinaryReader br = new(new MemoryStream(bootloader)))
+            using (BinaryReader br = new(bootloader))
             {
                 for (int i = 0; i < sectors; i++)
                 {
                     byte[] buff = br.ReadBytes(chunkSize);
-                    ds.Write(buff, 0, chunkSize);
+                    ds.Content.Write(buff, 0, chunkSize);
                     Logging.ShowProgress((ulong)bootloader.Length, startTime, (ulong)((i + 1) * chunkSize), (ulong)((i + 1) * chunkSize), false);
                 }
             }
@@ -180,13 +181,12 @@ namespace FirmwareGen
                 const string TmpVHD = $@"{tmp}\temp.vhdx";
                 Logging.Log("Copying Main VHD");
                 VolumeUtils.CopyFile(options.Input, TmpVHD);
-                string DiskId = VolumeUtils.MountVirtualHardDisk(TmpVHD, false);
-                _ = VolumeUtils.GetVirtualHardDiskLetterFromDiskID(DiskId);
 
                 Logging.Log("Writing Bootloader");
-                WriteBootLoaderToDisk(DiskId, deviceProfile);
-                VolumeUtils.DismountVirtualHardDisk(TmpVHD);
-                DiskId = VolumeUtils.MountVirtualHardDisk(TmpVHD, false);
+                WriteBootLoaderToDisk(TmpVHD, deviceProfile);
+
+                string DiskId = VolumeUtils.MountVirtualHardDisk(TmpVHD, false);
+                _ = VolumeUtils.GetVirtualHardDiskLetterFromDiskID(DiskId);
 
                 Logging.Log("Making FFU");
                 VolumeUtils.RunProgram(Img2Ffu, $@"-i \\.\PhysicalDrive{DiskId} -f ""{options.Output + "\\" + deviceProfile.FFUFileName(options.Ver, "en-us", "PROFESSIONAL")}"" -p {deviceProfile.PlatformID()} -o {options.Ver}");
