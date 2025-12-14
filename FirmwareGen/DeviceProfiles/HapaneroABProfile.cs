@@ -14,7 +14,7 @@
 
         public string DriverCommand(string DriverFolder)
         {
-            return $@"{DriverFolder}\definitions\Desktop\ARM64\Internal\rx130.txt";
+            return $@"{DriverFolder}\definitions\Desktop\ARM64\Internal\rx130.xml";
         }
 
         public string FFUFileName(string OSVersion, string Language, string Sku)
