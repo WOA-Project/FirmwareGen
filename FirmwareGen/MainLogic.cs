@@ -20,9 +20,9 @@ namespace FirmwareGen
         public static bool VerifyAllComponentsArePresent()
         {
             const string BlankVHD = "blank.vhdx";
-            const string wimlib = "wimlib-imagex.exe";
-            const string Img2Ffu = "Img2Ffu.exe";
-            const string DriverUpdater = "DriverUpdater.exe";
+            const string wimlib = "wimlib\\wimlib-imagex.exe";
+            const string Img2Ffu = "img2ffu\\Img2Ffu.exe";
+            const string DriverUpdater = "DriverUpdater\\DriverUpdater.exe";
 
             if (!File.Exists(wimlib))
             {
@@ -63,7 +63,7 @@ namespace FirmwareGen
         public static void GenerateWindowsBaseVHDX(GenerateWindowsOptions options)
         {
             const string BlankVHD = "blank.vhdx";
-            const string wimlib = "wimlib-imagex.exe";
+            const string wimlib = "wimlib\\wimlib-imagex.exe";
             const string SystemPartition = "Y:";
 
             Logging.Log("Copying Blank Main VHD");
@@ -83,8 +83,8 @@ namespace FirmwareGen
         {
             const string tmp = "tmp";
             const string SystemPartition = "Y:";
-            const string Img2Ffu = "Img2Ffu.exe";
-            const string DriverUpdater = "DriverUpdater.exe";
+            const string Img2Ffu = "img2ffu\\Img2Ffu.exe";
+            const string DriverUpdater = "DriverUpdater\\DriverUpdater.exe";
 
             if (!Directory.Exists(tmp))
             {
@@ -168,7 +168,7 @@ namespace FirmwareGen
         public static void GenerateOtherFFU(GenerateOtherFFUOptions options)
         {
             const string tmp = "tmp";
-            const string Img2Ffu = "Img2Ffu.exe";
+            const string Img2Ffu = "img2ffu\\Img2Ffu.exe";
 
             if (!Directory.Exists(tmp))
             {
