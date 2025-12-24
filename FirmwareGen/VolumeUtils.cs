@@ -17,7 +17,7 @@ namespace FirmwareGen
         public static void ConfigureBootManager(string VHDLetter, string SystemPartition)
         {
             Logging.Log("Configuring boot");
-            RunProgram("bcdboot.exe", $@"{VHDLetter}\Windows /s {SystemPartition} /f UEFI /l en-us");
+            RunProgram("bcdboot.exe", $@"{VHDLetter}\Windows /s {SystemPartition} /f UEFI /l en-us /offline");
         }
 
         public static void MountSystemPartition(string DiskId, string SystemPartition)
