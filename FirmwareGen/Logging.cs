@@ -37,11 +37,11 @@ namespace FirmwareGen
             DateTime now = DateTime.Now;
             TimeSpan timeSoFar = now - startTime;
 
-            TimeSpan remaining = TimeSpan.FromMilliseconds(timeSoFar.TotalMilliseconds / BytesRead * (totalBytes - BytesRead));
+            //TimeSpan remaining = TimeSpan.FromMilliseconds(timeSoFar.TotalMilliseconds / BytesRead * (totalBytes - BytesRead));
 
-            double speed = Math.Round(SourcePosition / 1024L / 1024L / timeSoFar.TotalSeconds);
+            //double speed = Math.Round(SourcePosition / 1024L / 1024L / timeSoFar.TotalSeconds);
 
-            Log(string.Format($"{GetDismLikeProgBar(int.Parse((BytesRead * 100 / totalBytes).ToString()))} {speed}MB/s {Math.Truncate(remaining.TotalHours):00}:{remaining.Minutes:00}:{remaining.Seconds:00}.{remaining.Milliseconds:000}"), severity: DisplayRed ? LoggingLevel.Warning : LoggingLevel.Information, returnline: false);
+            Log(string.Format($"{GetDismLikeProgBar(int.Parse((BytesRead * 100 / totalBytes).ToString()))}"), severity: DisplayRed ? LoggingLevel.Warning : LoggingLevel.Information, returnline: false);
         }
 
         private static string GetDismLikeProgBar(int perc)
