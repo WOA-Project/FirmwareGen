@@ -27,7 +27,7 @@ namespace FirmwareGen
 
             return [
                 .. PrimaryMBR,
-                .. GPTUtils.MakeGPT(DiskSize, SectorSize, deviceProfile.PartitionLayout, deviceProfile.DiskGuid, IsBackupGPT: false, SplitInHalf: deviceProfile.SplittingStrategy == SplittingStrategy.HalfSplit, AndroidDesiredSpace: deviceProfile.SplittingStrategy == SplittingStrategy.Custom ? deviceProfile.CustomSplittingAndroidDesiredSpace : 4_294_967_296)
+                .. GPTUtils.MakeGPT(DiskSize, SectorSize, deviceProfile.PartitionLayout, deviceProfile.DiskGuid, IsBackupGPT: false)
             ];
         }
 
@@ -36,7 +36,7 @@ namespace FirmwareGen
             ulong DiskSize = deviceProfile.DiskTotalSize;
             uint SectorSize = deviceProfile.DiskSectorSize;
 
-            return GPTUtils.MakeGPT(DiskSize, SectorSize, deviceProfile.PartitionLayout, deviceProfile.DiskGuid, IsBackupGPT: true, SplitInHalf: deviceProfile.SplittingStrategy == SplittingStrategy.HalfSplit, AndroidDesiredSpace: deviceProfile.SplittingStrategy == SplittingStrategy.Custom ? deviceProfile.CustomSplittingAndroidDesiredSpace : 4_294_967_296);
+            return GPTUtils.MakeGPT(DiskSize, SectorSize, deviceProfile.PartitionLayout, deviceProfile.DiskGuid, IsBackupGPT: true);
         }
 
         public static string GetBlankVHD(DeviceProfile deviceProfile)
